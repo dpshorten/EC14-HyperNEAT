@@ -1,0 +1,7 @@
+# 1. generation
+# 2. genChamp Original Fitness
+# 3. genChamp Adjusted Fitness
+# 4. population average Original Fitness 
+# 5. population average Adjusted Fitness 
+
+1 0 1e-05 0 1e-05 

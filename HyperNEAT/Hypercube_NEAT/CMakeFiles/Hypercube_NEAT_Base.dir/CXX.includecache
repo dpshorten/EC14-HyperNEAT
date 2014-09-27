@@ -1,0 +1,8 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*([Hh][Cc][Uu][Bb][Ee]|[Nn][Ee][Aa][Tt]|main).*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
