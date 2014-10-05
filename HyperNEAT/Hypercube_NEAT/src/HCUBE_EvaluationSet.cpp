@@ -21,7 +21,7 @@ namespace HCUBE
                 while (!running)
                 {
                     boost::xtime xt;
-                    boost::xtime_get(&xt, boost::TIME_UTC); //(nac: changed for latest version of boost)
+                    boost::xtime_get(&xt, boost::TIME_UTC_); //(nac: changed for latest version of boost)
                     xt.sec += 1;
 					cout << "jmc: used1!\n"; exit(3);
                     boost::thread::sleep(xt); // Sleep for 1 second
