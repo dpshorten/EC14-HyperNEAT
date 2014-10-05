@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libtinyxmldll.so -o out/libtinyxmldll.so CMakeFiles/tinyxmldll.dir/src/tinyxmldll.o CMakeFiles/tinyxmldll.dir/src/tinyxmlparserdll.o CMakeFiles/tinyxmldll.dir/src/tinyxmlerrordll.o -L/home/jheinerm/HyperNEAT/tinyxmldll/../zlib/out -lzlib -Wl,-rpath,/home/jheinerm/HyperNEAT/tinyxmldll/../zlib/out 
