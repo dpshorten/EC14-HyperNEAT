@@ -62,7 +62,6 @@ int HyperNEAT_main(int argc, char **argv) {
         int experimentType = int(GET_PARAMETER("ExperimentType") + 0.001);
 
         cout << "Loading Experiment: " << experimentType << endl;
-
         HCUBE::ExperimentRun experimentRun;
 
         string outputFilePrefix = commandLineParser.GetSafeArgument("-O", 0, "output.xml").c_str();
