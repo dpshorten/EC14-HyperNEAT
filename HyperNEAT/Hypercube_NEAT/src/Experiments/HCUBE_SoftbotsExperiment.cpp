@@ -279,37 +279,6 @@ namespace HCUBE {
         if (evolvingSensorsAndMotors) {
 
             int v;
-            // cout<<"original array:"<<endl;
-            // // print this:
-            // // int v=0;
-            // v=0;
-            // for (int xIndex=0; xIndex<num_x_voxels; xIndex++)
-            // {
-            //     for (int yIndex=0; yIndex<num_y_voxels; yIndex++)
-            //     {
-            //         for (int zIndex=0; zIndex<num_z_voxels; zIndex++)
-            //         {
-            //             cout << ArrayForVoxelyze[v] << " ";
-            //             v++;
-            //         }
-            //         cout << endl;
-            // 	}
-            //     cout << endl << endl;
-            // }
-
-            // v=0;
-            // for (int xIndex=0; xIndex<num_x_voxels; xIndex++)
-            // {
-            //     for (int yIndex=0; yIndex<num_y_voxels; yIndex++)
-            //     {
-            //         for (int zIndex=0; zIndex<num_z_voxels; zIndex++)
-            //         {
-            //             if (SensorArrayForVoxelyze[v] > numSensors) {numSensors = SensorArrayForVoxelyze[v];}
-            //             if (MuscleArrayForVoxelyze[v] > numMuscles) {numMuscles = MuscleArrayForVoxelyze[v];}
-            //             v++;
-            //         }
-            //     }
-            // }
             for (int j = 0; j < ContinuousArray.GetFullSize(); j++) //iterate through each location of the continuous matrix
             {
                 if (SensorArrayForVoxelyze[j] > numSensors) {
@@ -319,34 +288,6 @@ namespace HCUBE {
                     numMuscles = MuscleArrayForVoxelyze[j];
                 }
             }
-
-
-            // cout<<"sensors:"<<endl;
-            // // print this:
-            // // int v=0;
-            // v=0;
-            // for (int xIndex=0; xIndex<num_x_voxels; xIndex++)
-            // {
-            // 	for (int yIndex=0; yIndex<num_y_voxels; yIndex++)
-            // 	{
-            // 		for (int zIndex=0; zIndex<num_z_voxels; zIndex++)
-            // 		{
-            // 			cout << SensorArrayForVoxelyze[v] << " ";
-            // 			v++;
-            // 		}
-            // 		cout << endl;
-            // 	}
-            // 	cout << endl;
-            // }
-
-            // cout<<"numSensors: "<< numSensors <<endl;
-
-            // numSensors += numPacemaker;
-
-            // cout<<"numSensors,includingPacemaker: "<< numSensors <<endl;
-
-            // cout<<"numMuscles: "<< numMuscles <<endl;
-
             if (numSensors == 0) {
                 cout << "No Sensors... assigning fitness of 0.00001" << endl;
                 return 0.00001;
@@ -442,22 +383,6 @@ namespace HCUBE {
                     posZ += 2.0 / (spacing + 1);
                 }
             }
-
-            // for (int i=0; i<numSensors; i++)
-            // {
-            // 	cout << "sensor " << i << " location: " << sensorPositions[i][0] << ", " << sensorPositions[i][1] << ", " << sensorPositions[i][2] << endl;
-            // }
-            // for (int i=0; i<numHidden; i++)
-            // {
-            // 	cout << "hidden " << i << " location: " << hiddenPositions[i][0] << ", " << hiddenPositions[i][1] << ", " << hiddenPositions[i][2] << endl;
-            // }
-            // for (int i=0; i<numMuscles; i++)
-            // {
-            // 	cout << "muscle " << i << " location: " << musclePositions[i][0] << ", " << musclePositions[i][1] << ", " << musclePositions[i][2] << endl;
-            // }
-
-            // float synapseWeights [numSensors*numHidden+numHidden*numHidden+numHidden*numMuscles];
-
 
             for (int startNeuron = 0; startNeuron < numSensors; startNeuron++) {
 
@@ -738,17 +663,6 @@ namespace HCUBE {
                 }
             }
 
-            // for (int i=0; i<numSensors*numHidden+numHidden*(numHidden+numMuscles); i++)
-            // {
-            // 	cout << "weight for "<< i << ": " << synapseWeights[i] << endl;
-            // }
-
-            // for (int i=0; i<numSensors+numHidden+numMuscles; i++)
-            // {
-            // 	cout << "presynaptic bias for "<< i << ": " << nodeBias[i] << endl;
-            // 	cout << "time constant for "<< i << ":    " << nodeTimeConstant[i] << endl;
-            // }
-
             bool hasSynapse = false;
             for (int i = 0; i < numSensors * numHidden; i++) {
                 if (synapseWeights[i] != 0) {
@@ -774,36 +688,6 @@ namespace HCUBE {
             }
 
         }
-
-
-        // for (int thisHidden; thisHidden<numHidden; thisHidden++)
-        // {
-        // 	cout << hiddenPositions[thisHidden][0] << ", " << hiddenPositions[thisHidden][1] << ", " << hiddenPositions[thisHidden][2] << endl; 
-        // }
-
-        /*
-        nac: TODO!!!
-        for each node:
-                for each other node:
-        {
-                calc synapse weight between node and other node
-        }
-         */
-        // int vCounter = 0;
-        // for (int z=0; z<num_z_voxels; z++)
-        // {
-        // 	for (int y=0; y<num_y_voxels; y++)
-        // 	{
-        // 		for (int x=0; x<num_x_voxels; x++)
-        // 		{
-        // 			cout << ArrayForVoxelyze[vCounter];
-        // 			vCounter++;
-        // 		}
-        // 	}
-        // 	cout << endl;
-        // }
-
-
 
         float fitness;
         float origFitness = 0.00001;
@@ -841,16 +725,11 @@ namespace HCUBE {
             }
         }
 
-        // int voxelPenalty = writeVoxelyzeFile(ContinuousArray, PassiveStiffArray, PassiveSoftArray, Phase1Array, Phase2Array, individualID);
         writeVoxelyzeFile(ArrayForVoxelyze, SensorArrayForVoxelyze, MuscleArrayForVoxelyze, individualID, synapseWeights, sensorPositions, hiddenPositions, musclePositions, numSensors, numHidden, numMuscles, nodeBias, nodeTimeConstant, individual);
-
-        //		if (saveVxaOnly)
-        //		{
-        //			std::ostringstream addFitnessToInputFileCmd;
-        //			addFitnessToInputFileCmd << "mv " << individualID << "_genome.vxa "<< genNum << "/" << individualID << "--adjFit_"<< individual.getFitness() << "--numFilled_" << individual.getNumFilled() << "--origFit_"<< individual.getOrigFitness() << "_genome.vxa";
-        //			int exitCode3 = std::system(addFitnessToInputFileCmd.str().c_str());
-        //			return 0.001;
-        //		}
+        saveVxaOnly = 1; //debugging
+        if (saveVxaOnly) {
+            std::exit(0);
+        }
 
         // if (numTotalVoxels < 2)
         // {
@@ -892,57 +771,7 @@ namespace HCUBE {
                 //cout << "fitness from hash: " << fitness << endl;
                 //cout << "orig fitness: " << origFitness << endl;
                 cout << "This individual was already evaluated!  Its original fitness look-up is: " << fitness << endl;
-
-                //skippedEvals++;	
-
-                //std::ostringstream rmVxaCmd;
-                //rmVxaCmd << "rm " << individualID << "_genome.vxa";
-                //int exitCode3 = std::system(rmVxaCmd.str().c_str());
-                /*
-                                                std::ostringstream rmVxaCmd;
-
-                                                if (genNum % (int)NEAT::Globals::getSingleton()->getParameterValue("RecordEntireGenEvery")==0) // || bestFit<fitness) // <-- nac: individuals processed one at a time, not as generation group
-                                                {		
-                                                        rmVxaCmd << "mv " << individualID << "_genome.vxa Gen_"; 
-
-                                                        char buffer1 [100];
-                                                        sprintf(buffer1, "%04i", genNum);
-                                                        rmVxaCmd << buffer1;
-
-                                                        rmVxaCmd << "/" << individualID << "--adjFit_";
-
-                                                        char adjFitBuffer[100];
-                                                        sprintf(adjFitBuffer, "%.8lf", fitness);
-                                                        rmVxaCmd << adjFitBuffer;
-
-                                                        rmVxaCmd << "--numFilled_";
-
-                                                        char NumFilledBuffer[100];
-                                                        sprintf(NumFilledBuffer, "%04i", voxelPenalty);
-                                                        rmVxaCmd << NumFilledBuffer;
-
-                                                        //origFitness = individual->getOrigFitness();
-                                                        cout << "GRABBING ORIGINAL FITNESS: " << origFitness << " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-
-                                                        rmVxaCmd << "--origFit_";
-
-                                                        char origFitBuffer[100];
-                                                        sprintf(origFitBuffer, "%.8lf", origFitness);
-                                                        rmVxaCmd << origFitBuffer;
-                                                        //rmVxaCmd << "hashed.fit";
-
-                                                        rmVxaCmd << "_genome.vxa";
-
-                                                } else
-                                                {
-                                                        rmVxaCmd << "rm " << individualID << "_genome.vxa";
-                                                }
-
-                                                int exitCode3 = std::system(rmVxaCmd.str().c_str());
-                 */
-                //return fitness;
-            } else
- {
+            } else {
                 clock_t start;
                 clock_t end;
                 start = clock();
@@ -1382,10 +1211,6 @@ namespace HCUBE {
             numVoxelsActuated = 0;
             numConnections = 0;
 
-            //totalEvals++;
-
-            //cout << "indivudial num??? ('z' value): " << z <<endl;
-
             numMaterials = int(NEAT::Globals::getSingleton()->getParameterValue("NumMaterials"));
 
             int genNum = generation->getGenerationNumber() + 1;
@@ -1404,12 +1229,17 @@ namespace HCUBE {
 
             //cout<< "RUN NAME: " << NEAT::Globals::getSingleton()->getOutputFilePrefix() << endl;
 
+            bool simpleFilename = true; //false means classic filename with generation and random ID
             std::ostringstream tmp;
-            tmp << "Softbots--" << NEAT::Globals::getSingleton()->getOutputFilePrefix() << "--Gen_";
-            char buffer [50];
-            sprintf(buffer, "%04i", genNum);
-            tmp << buffer;
-            tmp << "--Ind_" << individual;
+            tmp << NEAT::Globals::getSingleton()->getOutputFilePrefix();
+
+            if (!simpleFilename) {
+                tmp << "--Gen_";
+                char buffer [50];
+                sprintf(buffer, "%04i", genNum);
+                tmp << buffer;
+                tmp << "--Ind_" << individual;
+            }
             string individualID = tmp.str();
             cout << endl << individualID << endl;
 
@@ -1614,7 +1444,6 @@ namespace HCUBE {
         std::ostringstream myFileName;
         myFileName << individualID << "_genome.vxa";
         myfile.open(myFileName.str().c_str());
-        //1000000000
         myfile << "\
 <?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
 <VXA Version=\"1.0\">\n\
@@ -1886,7 +1715,7 @@ namespace HCUBE {
                         myfile << ArrayForVoxelyze[v] << ",";
                         md5file << ArrayForVoxelyze[v];
                         v++;
-                    }                        //if this is a place where we want an obstacle, place it
+                    }//if this is a place where we want an obstacle, place it
                     else if ((DoObs > 0) && (z == 0) && (
                             ((CurDist > ObsDistDes) && (CurDist < ObsDistDes + ObsThickness)) /*a first concentric circle*/
                             || ((CurDist > ObsDistDes * 1.5) && (CurDist < ObsDistDes * 1.5 + ObsThickness)) /*a second concentric circle*/
@@ -1894,7 +1723,7 @@ namespace HCUBE {
                             )) {
                         myfile << 5;
                         md5file << 5;
-                    }                        //o.w., no voxel is placed 
+                    }//o.w., no voxel is placed 
                     else {
                         myfile << 0;
                         md5file << 0;
@@ -2093,8 +1922,7 @@ namespace HCUBE {
                                 ArrayForVoxelyze[v] = 1;
                             }
                         }
-                    }
-                    else // notEvolvingSensorsAndMotors == muscle phases
+                    } else // notEvolvingSensorsAndMotors == muscle phases
                     {
                         if (ContinuousArray[v] < 0) {
                             ArrayForVoxelyze[v] = 0;
@@ -2408,8 +2236,7 @@ namespace HCUBE {
             return -999;
         } else if (ArrayForVoxelyze[currentPosition - 1] == 0) {
             return -999;
-        }
-        else {
+        } else {
             return (currentPosition - 1);
         }
     }

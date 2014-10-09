@@ -168,70 +168,9 @@ namespace HCUBE {
 
             for (int generations = (population->getGenerationCount() - 1); generations < GET_PARAMETER("MaxGenerations"); generations++) {
                 cout << "CURRENT SUBEXPERIMENT: " << currentSubExperiment << " Generation:" << generations << endl;
+                cout << "about to evaluatePopulation\n";
+                evaluatePopulation();
 
-                if (generations > 0) {
-                    // TODO: replace OR with experiments[currentSubExperiment].getExperimentName() == "HYBRID"
-                    if (experiments[currentSubExperiment]->getExperimentName() == "HYBRID" && switchSubExperiment(generations))
-                        //					if((experimentType == EXPERIMENT_LEGSWING_HYBRID || experimentType == EXPERIMENT_BITMIRRORING_HYBRID || experimentType == EXPERIMENT_TARGETWEIGHTS_HYBRID) && switchSubExperiment(generations))
-                    {
-                        cout << "\n\n"
-                                << "************************\n"
-                                << "Switching SubExperiment:  Hyper -> FT\n"
-                                << "************************\n\n";
-                        // copy population from (currentSubExperiment-1)%totalSubExperiments to currentSubExperiment using HyperNEAT to P-NEAT converter
-                        population = shared_ptr<NEAT::GeneticPopulation>(experiments[currentSubExperiment]->createInitialPopulation(population, experiments[(currentSubExperiment + 1) % totalSubExperiments]));
-                        //TODO: check that this copying works
-
-                        //THESE CAN COME OUT when Hyper -> NEAT works
-                        cout << "changing the following three parameter settings from the HyperNEAT settings of:" << endl;
-                        cout << "MutateAddNodeProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateAddNodeProbability") << endl;
-                        cout << "MutateAddLinkProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateAddLinkProbability") << endl;
-                        cout << "MutateDemolishLinkProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateDemolishLinkProbability") << endl;
-                        NEAT::Globals::getSingleton()->setParameterValue("MutateAddNodeProbability", 0.0);
-                        NEAT::Globals::getSingleton()->setParameterValue("MutateAddLinkProbability", 0.0);
-                        NEAT::Globals::getSingleton()->setParameterValue("MutateDemolishLinkProbability", 0.0);
-                        cout << endl << "to the FT-NEAT values of: " << endl;
-                        cout << "MutateAddNodeProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateAddNodeProbability") << endl;
-                        cout << "MutateAddLinkProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateAddLinkProbability") << endl;
-                        cout << "MutateDemolishLinkProbability: " << NEAT::Globals::getSingleton()->getParameterValue("MutateDemolishLinkProbability") << endl << endl;
-
-                        if (experiments[currentSubExperiment]->getHybrid_FTMutateOnlyProbability() != -1.0)
-                            NEAT::Globals::getSingleton()->setParameterValue("MutateOnlyProbability", experiments[currentSubExperiment]->getHybrid_FTMutateOnlyProbability());
-
-                        if (experiments[currentSubExperiment]->getHybrid_FTMutateLinkProbability() != -1.0)
-                            NEAT::Globals::getSingleton()->setParameterValue("MutateLinkProbability", experiments[currentSubExperiment]->getHybrid_FTMutateLinkProbability());
-
-                        //THESE CAN COME OUT ONCE THIS WORKS
-                        cout << "MutateOnlyProbability" << NEAT::Globals::getSingleton()->getParameterValue("MutateOnlyProbability") << endl;
-                        cout << "MutateLinkProbability" << NEAT::Globals::getSingleton()->getParameterValue("MutateLinkProbability") << endl;
-                    } else {
-                        mutex::scoped_lock scoped_lock(*populationMutex);
-                        cout << "\nPRODUCING NEXT GENERATION\n";
-                        produceNextGeneration();
-                    }
-                }
-
-                if (experiments[currentSubExperiment]->performUserEvaluations()) {
-                    throw CREATE_LOCATEDEXCEPTION_INFO("ERROR: TRIED TO USE INTERACTIVE EVOLUTION WITH NO GUI!");
-                } else {
-                    while (!running) {
-                        // boost::xtime xt;
-                        // boost::xtime_get(&xt, boost::TIME_UTC_); //(nac: changed for latest version of boost)
-                        // xt.sec += 1;
-                        // boost::this_thread::sleep(xt); // Sleep for 1/2 second
-                        // boost::this_thread::sleep_for(std::chrono::seconds(1));
-                        sleep(1);
-                    }
-#ifdef INTERACTIVELYEVOLVINGSHAPES
-                    stringstream genNum;
-                    genNum << setw(5) << std::setfill('0') << generations;
-                    population->dumpLast(outputFileName + "_" + genNum.str() + ".xml", true, false); //print out xml file each generation
-#endif
-
-
-                    cout << "about to evaluatePopulation\n";
-                    evaluatePopulation();
-                }
 
 #ifdef DEBUG_EXPRUN
                 cout << "Finishing evaluations\n";
@@ -274,88 +213,22 @@ namespace HCUBE {
     void ExperimentRun::evaluatePopulation() {
 
         shared_ptr<NEAT::GeneticGeneration> generation = population->getGeneration();
-        //Randomize population order for evaluation
-        //		if(experimentType != EXPERIMENT_LEGSWING_HYBRID && experimentType != EXPERIMENT_BITMIRRORING_HYBRID)
-        //generation->randomizeIndividualOrder();  //Jason ransomized these to balance loads on machines because more fit orgs took longer. It should be ok to comment it out (though it will break consistency tsets"
 
         int populationSize = population->getIndividualCount();
-
         int populationPerProcess = populationSize / NUM_THREADS;
 
-        //		cout << "jmc: used1!\n"; exit(3);
-        //boost::thread** threads = new boost::thread*[NUM_THREADS]; // comment this out to get rid of threading
         EvaluationSet** evaluationSets = new EvaluationSet*[NUM_THREADS];
 
-        if (totalSubExperiments > 1) {
-            assert(NUM_THREADS == 1); // only one thread allowed
-            //Fix for uneven distribution
-            int populationIteratorSize =
-                    populationSize
-                    - populationPerProcess * (NUM_THREADS - 1);
-
-            evaluationSets[0] =
-                    new EvaluationSet(
-                    experiments[currentSubExperiment],
-                    generation,
-                    population->getIndividualIterator(populationPerProcess * 0),
-                    populationIteratorSize
-                    );
-            //threads[0] = new boost::thread(boost::bind(&EvaluationSet::run,evaluationSets[0]));
-            //jmc: commenting out previous line, and created next, to get rid of threading so that opengl does not pinwheel
-            evaluationSets[0]->run();
-
-        } else {
-            for (int i = 0; i < NUM_THREADS; ++i) {
-                if (i + 1 == NUM_THREADS) {
-                    //Fix for uneven distribution
-                    int populationIteratorSize =
-                            populationSize
-                            - populationPerProcess * (NUM_THREADS - 1);
-                    evaluationSets[i] =
-                            new EvaluationSet(
-                            experiments[i],
-                            generation,
-                            population->getIndividualIterator(populationPerProcess * i),
-                            populationIteratorSize
-                            );
-                } else {
-
-                    evaluationSets[i] =
-                            new EvaluationSet(
-                            experiments[i],
-                            generation,
-                            population->getIndividualIterator(populationPerProcess * i),
-                            populationPerProcess
-                            );
-                }
-
-                //threads[i] = new boost::thread(boost::bind(&EvaluationSet::run,	evaluationSets[i]));
-                //jmc: commenting out previous line, and created next, to get rid of threading so that opengl does not pinwheel
-                evaluationSets[i]->run();
-            }
-        }
-        //loop through each thread, making sure it is finished before we move on
         for (int i = 0; i < NUM_THREADS; ++i) {
-            /*if (!evaluationSets[i]->isFinished())
-             {
-             --i;
-             boost::xtime xt;
-             boost::xtime_get(&xt, boost::TIME_UTC);
-             xt.sec += 1;
-             boost::thread::sleep(xt); // Sleep for 1/2 second
-             }*/
-
-            //threads[i]->join(); //jmc hail mary - this is where it is crashing, now that I have removed threads
+            evaluationSets[i] =
+                    new EvaluationSet(
+                    experiments[i],
+                    generation,
+                    population->getIndividualIterator(populationPerProcess * i),
+                    populationPerProcess
+                    );
+            evaluationSets[i]->run();
         }
-        //TODO: Does not deleting these cause a memory leak?		
-        // hail mary continues: following five lines are uncommented with threading
-        //		for (int i = 0; i < NUM_THREADS; ++i)
-        //		{
-        //			delete threads[i];
-        //			delete evaluationSets[i];
-        //		}
-
-        //delete[] threads; //comment this out to get rid of threading
         delete[] evaluationSets;
     }
 
