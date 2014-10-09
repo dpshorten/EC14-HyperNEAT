@@ -93,21 +93,7 @@ ADD_LIBRARY(
 	src/hiller/XML_Rip.cpp
 	src/hiller/XML_Rip.h
 
-	src/Experiments/HCUBE_FindClusterExperiment.cpp
-	src/Experiments/HCUBE_FindClusterNoGeomExperiment.cpp
-	src/Experiments/HCUBE_LegSwingExperiment.cpp
-	src/Experiments/HCUBE_BitMirroringV2Experiment.cpp
-	src/Experiments/HCUBE_BitMirroringV2NoGeomExperiment.cpp
-	src/Experiments/HCUBE_LegSwingExperiment-Pneat.cpp
-	src/Experiments/HCUBE_LegSwingExperiment-NEAT.cpp
-	src/Experiments/HCUBE_TargetWeightsExperiment.cpp
-	src/Experiments/HCUBE_TargetWeightsNoGeomExperiment.cpp
-	src/Experiments/HCUBE_ShapesExperiment.cpp
 	src/Experiments/HCUBE_SoftbotsExperiment.cpp
-        src/Experiments/HCUBE_BracketExperiment.cpp
-	src/Experiments/HCUBE_SpiderRobotExperiment.cpp
-	src/Experiments/HCUBE_Retina-FTNEAT.cpp	
-	src/Experiments/HCUBE_RetinaExperiment.cpp	
 	src/HCUBE_ODE.cpp 
 
 	include/HCUBE_Boost.h
@@ -117,21 +103,7 @@ ADD_LIBRARY(
 	include/HCUBE_STL.h
 
 	include/Experiments/HCUBE_Experiment.h
-	include/Experiments/HCUBE_FindClusterExperiment.h
-	include/Experiments/HCUBE_FindClusterNoGeomExperiment.h
-	include/Experiments/HCUBE_LegSwingExperiment.h
-	include/Experiments/HCUBE_LegSwingExperiment-NEAT.h
-	include/Experiments/HCUBE_TargetWeightsExperiment.h
-	include/Experiments/HCUBE_TargetWeightsNoGeomExperiment.h
-	include/Experiments/HCUBE_BitMirroringV2Experiment.h
-	include/Experiments/HCUBE_BitMirroringV2NoGeomExperiment.h
-	include/Experiments/HCUBE_ShapesExperiment.h
 	include/Experiments/HCUBE_SoftbotsExperiment.h
-        include/Experiments/HCUBE_BracketExperiment.h
-
-	include/Experiments/HCUBE_SpiderRobotExperiment.h
-	include/Experiments/HCUBE_Retina-FTNEAT.h
-	include/Experiments/HCUBE_RetinaExperiment.h
 
 	include/HCUBE_ODE.h
 	)

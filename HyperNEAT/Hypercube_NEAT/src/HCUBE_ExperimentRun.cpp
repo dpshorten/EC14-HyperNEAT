@@ -2,20 +2,7 @@
 
 #include "Experiments/HCUBE_Experiment.h"
 
-
-#include "Experiments/HCUBE_FindClusterExperiment.h"
-#include "Experiments/HCUBE_FindClusterNoGeomExperiment.h"
-
-#include "Experiments/HCUBE_RetinaExperiment.h"
-#include "Experiments/HCUBE_Retina-FTNEAT.h"
-#include "Experiments/HCUBE_ShapesExperiment.h"
 #include "Experiments/HCUBE_SoftbotsExperiment.h"
-
-#include "Experiments/HCUBE_TargetWeightsExperiment.h"
-#include "Experiments/HCUBE_TargetWeightsNoGeomExperiment.h"
-
-#include "Experiments/HCUBE_BitMirroringV2Experiment.h"
-#include "Experiments/HCUBE_BitMirroringV2NoGeomExperiment.h"
 
 #ifdef COMPILE_ODE
 #include "Experiments/HCUBE_LegSwingExperiment.h"
@@ -53,87 +40,6 @@ namespace HCUBE {
         cout << "SETTING UP EXPERIMENT TYPE: " << experimentType << endl;
 
         switch (experimentType) {
-            case EXPERIMENT_FIND_CLUSTER_EXPERIMENT:
-                experiments.push_back(shared_ptr<Experiment>(new FindClusterExperiment("")));
-                break;
-            case EXPERIMENT_FIND_CLUSTER_NO_GEOM_EXPERIMENT:
-                experiments.push_back(shared_ptr<Experiment>(new FindClusterNoGeomExperiment("")));
-                break;
-
-            case EXPERIMENT_TARGET_WEIGHTS_EXPERIMENT: //x21                                    
-                experiments.push_back(shared_ptr<Experiment>(new TargetWeightsExperiment("")));
-                break;
-
-            case EXPERIMENT_TARGET_WEIGHTS_NOGEOM_EXPERIMENT: //x22                                    
-                experiments.push_back(shared_ptr<Experiment>(new TargetWeightsNoGeomExperiment("")));
-                break;
-
-            case EXPERIMENT_BIT_MIRRORING_V2_EXPERIMENT: //x23                                    
-                experiments.push_back(shared_ptr<Experiment>(new BitMirroringV2Experiment("")));
-                break;
-            case EXPERIMENT_BIT_MIRRORING_V2_NOGEOM_EXPERIMENT: //x24                             
-                experiments.push_back(shared_ptr<Experiment>(new BitMirroringV2NoGeomExperiment("")));
-                break;
-#ifdef COMPILE_ODE				
-            case EXPERIMENT_LEGSWING:
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingExperiment("")));
-                break;
-
-            case EXPERIMENT_LEGSWING_PNEAT:
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingPneatExperiment("")));
-                break;
-            case EXPERIMENT_LEGSWING_HYBRID:
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingExperiment("HYBRID")));
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingPneatExperiment("HYBRID")));
-                currentSubExperiment = 0; // this line is redundent (set in constructor), but I want to be clear that we are starting in HyperNEAT
-                totalSubExperiments = experiments.size();
-                assert(totalSubExperiments == 2);
-                break;
-
-            case EXPERIMENT_LEGSWING_NEAT:
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingNEATExperiment("")));
-                break;
-            case EXPERIMENT_LEGSWING_NEAT_HYBRID:
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingExperiment("HYBRID")));
-                experiments.push_back(shared_ptr<Experiment>(new LegSwingNEATExperiment("HYBRID")));
-                currentSubExperiment = 0; // this line is redundent (set in constructor), but I want to be clear that we are starting in HyperNEAT
-                totalSubExperiments = experiments.size();
-                assert(totalSubExperiments == 2);
-                break;
-
-            case EXPERIMENT_SPIDERROBOT:
-                experiments.push_back(shared_ptr<Experiment>(new SpiderRobotExperiment("")));
-                break;
-
-#endif //COMPILE_ODE		
-            case EXPERIMENT_BITMIRRORING_HYBRID:
-                experiments.push_back(shared_ptr<Experiment>(new BitMirroringV2Experiment("HYBRID"))); // HyperNEAT
-                experiments.push_back(shared_ptr<Experiment>(new BitMirroringV2NoGeomExperiment("HYBRID"))); // FT-NEAT
-                currentSubExperiment = 0; // this line is redundent (set in constructor), but I want to be clear that we are starting in HyperNEAT
-                totalSubExperiments = experiments.size();
-                assert(totalSubExperiments == 2);
-                break;
-
-            case EXPERIMENT_TARGETWEIGHTS_HYBRID:
-                experiments.push_back(shared_ptr<Experiment>(new TargetWeightsExperiment("HYBRID"))); // HyperNEAT
-                experiments.push_back(shared_ptr<Experiment>(new TargetWeightsNoGeomExperiment("HYBRID"))); // FT-NEAT
-                currentSubExperiment = 0; // this line is redundent (set in constructor), but I want to be clear that we are starting in HyperNEAT
-                totalSubExperiments = experiments.size();
-                assert(totalSubExperiments == 2);
-                break;
-
-            case EXPERIMENT_RETINA:
-                experiments.push_back(shared_ptr<Experiment>(new RetinaExperiment("")));
-                break;
-
-            case EXPERIMENT_REINA_FTNEAT:
-                experiments.push_back(shared_ptr<Experiment>(new RetinaFTExperiment("")));
-                break;
-
-            case EXPERIMENT_SHAPES:
-                experiments.push_back(shared_ptr<Experiment>(new ShapesExperiment("")));
-                break;
-
             case EXPERIMENT_SOFTBOTS:
                 experiments.push_back(shared_ptr<Experiment>(new SoftbotsExperiment("")));
                 break;
@@ -338,27 +244,6 @@ namespace HCUBE {
 #endif
             }
             cout << "Experiment finished\n";
-
-            if (experimentType == EXPERIMENT_FIND_CLUSTER_EXPERIMENT) {
-                ofstream output_file;
-                output_file.open("gen-Genchamp-AvgDist.txt", ios::trunc);
-                output_file.close();
-
-                cout << "Saving Average Distances\n";
-                output_file.open("gen-Genchamp-AvgDist.txt", ios::app);
-                for (int generations = 0; generations < maxGenerations; generations++) {
-                    if (generations == 0) {
-                        output_file << "# 1. generation\n";
-                        output_file << "# 2. genChamp Average Distance to Target\n";
-                        output_file << "# 3. blank\n";
-                        output_file << "# 4. blank\n";
-                        output_file << endl;
-                    }
-
-                    output_file << generations + 1 << " " << static_pointer_cast<FindClusterStats>(population->getBestIndividualOfGeneration(generations)->getUserData())->averageDistance() << endl;
-                }
-                output_file.close();
-            }
 
             cout << "Saving Dump...";
             population->dump(outputFileName + string("_pop.xml"), true, false);

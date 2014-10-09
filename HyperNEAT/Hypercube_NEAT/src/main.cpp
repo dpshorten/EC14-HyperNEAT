@@ -6,9 +6,6 @@
 #include "Experiments/HCUBE_Experiment.h"
 #include "Experiments/HCUBE_SoftbotsExperiment.h"
 
-//#include "Experiments/HCUBE_FindClusterExperiment.h"
-//#include "Experiments/HCUBE_CheckersExperiment.h"
-
 #define PRINT_GENCHAMPFITNESSVIAPOSTHOCEVAL (0)
 
 using namespace HCUBE;

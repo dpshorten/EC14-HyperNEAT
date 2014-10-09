@@ -6,7 +6,6 @@
 #include "HCUBE_ExperimentRun.h"
 
 #include "Experiments/HCUBE_Experiment.h"
-#include "Experiments/HCUBE_FindClusterExperiment.h"
 //#include "Experiments/HCUBE_CheckersExperiment.h"
 #ifdef ONAMAC
 #include <ApplicationServices/ApplicationServices.h>
