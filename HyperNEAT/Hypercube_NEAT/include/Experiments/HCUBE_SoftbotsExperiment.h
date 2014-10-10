@@ -80,7 +80,9 @@ namespace HCUBE {
 
         double processEvaluation(shared_ptr<NEAT::GeneticIndividual> individual, string individualID, int genNum, bool saveVXA, double bestFit);
         
-        virtual void dump(shared_ptr<NEAT::GeneticIndividual> individual, string filename);
+        static void dump(shared_ptr<NEAT::GeneticIndividual> individual, string individualID);
+
+        static shared_ptr<NEAT::GeneticIndividual> undump(string individualID);
 
         virtual void processGroup(shared_ptr<NEAT::GeneticGeneration> generation);
 

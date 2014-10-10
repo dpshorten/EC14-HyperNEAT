@@ -19,12 +19,14 @@ int HyperNEAT_main(int argc, char **argv) {
          * job = 2; 2 parameters, create offspring 
          */
         int job = 0;
+        string org1 = "";
+        string org2 = "";
         if (commandLineParser.HasSwitch("-ORG")) {
             cout << "Switch -ORG\n";
 
-            string org1 = commandLineParser.GetSafeArgument("-ORG", 0, "");
+            org1 = commandLineParser.GetSafeArgument("-ORG", 0, "");
             cout << "first=" << org1 << endl;
-            string org2 = commandLineParser.GetSafeArgument("-ORG", 1, "");
+            org2 = commandLineParser.GetSafeArgument("-ORG", 1, "");
             cout << "second=" << org2 << endl;
 
             if ((org1.empty() && org2.empty())) {
@@ -92,12 +94,17 @@ int HyperNEAT_main(int argc, char **argv) {
             //create population (size 1)
             experimentRun.createPopulation();
 
-            //serialize this population
+            //set everything up, start early evaluation and then dump the stuff to genotype and vxa files
             experimentRun.start();
         } else if (job == 1) {
-            //TODO: read input genotype
-            //TODO: mutate genotype
-            //TODO: output genotype and voxelyze file
+            //read input genotype
+            shared_ptr<NEAT::GeneticIndividual> individual = SoftbotsExperiment::undump(org1);
+            
+            //mutate genotype
+            shared_ptr<NEAT::GeneticIndividual> individualMutated(new NEAT::GeneticIndividual(individual, true));
+            
+            //output genotype and voxelyze file
+            SoftbotsExperiment::dump(individualMutated, outputFilePrefix);
         } else if (job == 2) {
             //TODO: read input genotype 1
             //TODO: read input genotype 2

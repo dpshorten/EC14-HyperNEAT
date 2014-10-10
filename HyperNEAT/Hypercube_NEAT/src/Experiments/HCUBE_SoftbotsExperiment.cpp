@@ -727,10 +727,10 @@ namespace HCUBE {
 
         writeVoxelyzeFile(ArrayForVoxelyze, SensorArrayForVoxelyze, MuscleArrayForVoxelyze, individualID, synapseWeights, sensorPositions, hiddenPositions, musclePositions, numSensors, numHidden, numMuscles, nodeBias, nodeTimeConstant, individual);
         dump(individual, individualID);
-        
+
         saveVxaOnly = 1; //debugging
         if (saveVxaOnly) {
-            std::exit(0);
+            exit(0);
         }
 
         if (true) {
@@ -741,14 +741,14 @@ namespace HCUBE {
                 return 0.00001;
             }
             char buffer[128];
-            std::string result = "";
+            string result = "";
             while (!feof(pipe)) {
                 if (fgets(buffer, 128, pipe) != NULL)
                     result += buffer;
             }
             pclose(pipe);
 
-            std::string md5sumString = result.substr(0, 32);
+            string md5sumString = result.substr(0, 32);
             // cout << "md5sum: " << md5sumString << endl;
             individual->setThismd5(md5sumString);
 
@@ -777,11 +777,11 @@ namespace HCUBE {
 
                 // cout << "starting voxelyze evaluation now" << endl;
 
-                std::ostringstream callVoxleyzeCmd;
+                ostringstream callVoxleyzeCmd;
                 // callVoxleyzeCmd << "../config/voxelize -f " << individualID << "_genome.vxa";
                 callVoxleyzeCmd << "./voxelize -f " << individualID << "_genome.vxa";
 
-                std::ostringstream outFileName;
+                ostringstream outFileName;
                 outFileName << individualID << "_fitness.xml";
 
                 fitness = 0.00001;
@@ -950,7 +950,7 @@ namespace HCUBE {
                     // gettimeofday(&tim, NULL);
                     // t2=tim.tv_sec+(tim.tv_usec*1000000.0);
                     end = clock();
-                    std::ifstream infile(outFileName.str().c_str());
+                    ifstream infile(outFileName.str().c_str());
                     if (infile.is_open()) {
                         // cout << "done" << endl;
                         // printf("voxelyze took %.6lf seconds\n", double(end-start)/CLOCKS_PER_SEC);
@@ -969,14 +969,14 @@ namespace HCUBE {
                             // kill(0, SIGTERM);
 
                             int exitCode3 = std::system("ps axu > /tmp/HnPsFile.txt");
-                            std::ifstream psfile("/tmp/HnPsFile.txt");
-                            std::string thisLine;
+                            ifstream psfile("/tmp/HnPsFile.txt");
+                            string thisLine;
                             if (psfile.is_open()) {
-                                while (std::getline(psfile, thisLine)) {
-                                    std::size_t foundvox = thisLine.find("./voxelize");
-                                    if (foundvox != std::string::npos) {
+                                while (getline(psfile, thisLine)) {
+                                    size_t foundvox = thisLine.find("./voxelize");
+                                    if (foundvox != string::npos) {
                                         if (atoi(thisLine.substr(foundvox - 8, 4).c_str()) >= 2) {
-                                            std::size_t foundsp = thisLine.find(" ");
+                                            size_t foundsp = thisLine.find(" ");
                                             cout << ("kill " + thisLine.substr(foundsp, 11)).c_str() << endl;
                                             int exitCode4 = std::system(("kill " + thisLine.substr(foundsp, 11)).c_str());
                                         }
@@ -1000,23 +1000,23 @@ namespace HCUBE {
                 float FinalCOM_DistY;
                 float FinalCOM_DistZ;
                 if (infile.is_open()) {
-                    while (std::getline(infile, line)) {
+                    while (getline(infile, line)) {
                         // std::istringstream iss(line);
                         // cout << "line: " << line << endl;
                         // int a, b;
                         // if (!(iss >> a >> b)) { break; } // error
 
                         // process pair (a,b)
-                        std::size_t foundx = line.find("<FinalCOM_DistX>");
-                        if (foundx != std::string::npos) {
+                        size_t foundx = line.find("<FinalCOM_DistX>");
+                        if (foundx != string::npos) {
                             FinalCOM_DistX = atof(line.substr(foundx + strlen("<FinalCOM_DistX>"), line.find("</")-(foundx + strlen("<FinalCOM_DistX>"))).c_str());
                         }
-                        std::size_t foundy = line.find("<FinalCOM_DistY>");
-                        if (foundy != std::string::npos) {
+                        size_t foundy = line.find("<FinalCOM_DistY>");
+                        if (foundy != string::npos) {
                             FinalCOM_DistY = atof(line.substr(foundy + strlen("<FinalCOM_DistY>"), line.find("</")-(foundy + strlen("<FinalCOM_DistY>"))).c_str());
                         }
-                        std::size_t foundz = line.find("<FinalCOM_DistZ>");
-                        if (foundz != std::string::npos) {
+                        size_t foundz = line.find("<FinalCOM_DistZ>");
+                        if (foundz != string::npos) {
                             FinalCOM_DistZ = atof(line.substr(foundz + strlen("<FinalCOM_DistZ>"), line.find("</")-(foundz + strlen("<FinalCOM_DistZ>"))).c_str());
                         }
                     }
@@ -1132,8 +1132,8 @@ namespace HCUBE {
             cout << "ADJUSTED FITNESS VALUE: " << fitness << endl;
         }
 
-        std::ostringstream addFitnessToInputFileCmd;
-        std::ostringstream addFitnessToOutputFileCmd;
+        ostringstream addFitnessToInputFileCmd;
+        ostringstream addFitnessToOutputFileCmd;
 
         if (genNum % (int) NEAT::Globals::getSingleton()->getParameterValue("RecordEntireGenEvery") == 0) // || bestFit<fitness) // <-- nac: individuals processed one at a time, not as generation group
         {
@@ -1195,16 +1195,40 @@ namespace HCUBE {
 
     }
 
-    void SoftbotsExperiment::dump(shared_ptr<NEAT::GeneticIndividual> individual, string individualID) {
-        std::ostringstream filename;
+    string getGenomeFilename(string individualID) {
+        ostringstream filename;
         filename << individualID << "_genome.xml";
-        TiXmlDocument doc(filename.str());
-        TiXmlElement *root = new TiXmlElement("Genetics");
+        return filename.str();
+    }
+
+    void SoftbotsExperiment::dump(shared_ptr<NEAT::GeneticIndividual> individual, string individualID) {
+        TiXmlDocument doc(getGenomeFilename(individualID));
+        TiXmlElement *root = new TiXmlElement("Genetics"); //could be named anything
         individual->dump(root);
         doc.LinkEndChild(root);
         doc.SaveFile();
-    };
-    
+    }
+
+    shared_ptr<NEAT::GeneticIndividual> SoftbotsExperiment::undump(string individualID) {
+        string inputFilename = getGenomeFilename(individualID);
+        TiXmlDocument doc(inputFilename);
+        bool loadStatus;
+        //        if (iends_with(inputFilename, ".gz")) {
+        //            loadStatus = doc.LoadFileGZ(); // THIS DOESN'T WORK BECAUSE MY TINYXML IS TOO OLD
+        //        } else {
+        loadStatus = doc.LoadFile();
+        //        }
+
+        if (!loadStatus) {
+            cerr << "Error trying to load the XML file!" << endl;
+            throw CREATE_LOCATEDEXCEPTION_INFO("Error trying to load the XML file!");
+        }
+
+        TiXmlElement *element = doc.RootElement();
+        shared_ptr<GeneticIndividual> individual(new GeneticIndividual(element));
+        return individual;
+    }
+
     void SoftbotsExperiment::processGroup(shared_ptr<NEAT::GeneticGeneration> generation) {
         double bestFit = 0.0;
 
@@ -1420,7 +1444,7 @@ namespace HCUBE {
         {
             cout << "CREATING PARENTS FILE" << endl;
             parentFilenameCmd << "mv " << parentFilenameTemp.str() << " " << parentFilename.str();
-            int result = ::system(parentFilenameCmd.str().c_str());
+            int result = std::system(parentFilenameCmd.str().c_str());
             (void) result;
 
         }
