@@ -85,47 +85,37 @@ int HyperNEAT_main(int argc, char **argv) {
         cout << "Experiment set up\n";
 
 
-
-
-        /*
-         *
-         * insert custom Evolutionary Computing 2014 code here:
-         * 
-         */
-
-
+        double fitness;
+        shared_ptr<SoftbotsExperiment> sbExperiment = boost::static_pointer_cast<SoftbotsExperiment>(experimentRun.getExperiment());
         if (job == 0) {
             //create population (size 1)
             experimentRun.createPopulation();
 
             //set everything up, start early evaluation and then dump the stuff to genotype and vxa files
+            //at some point this sequentially calls SoftbotsExperiment::processEvaluation to check each indiv.
             experimentRun.start();
         } else if (job == 1) {
             //read input genotype
-            shared_ptr<NEAT::GeneticIndividual> individual = SoftbotsExperiment::undump(org1);
+            shared_ptr<NEAT::GeneticIndividual> individual = sbExperiment->undump(org1);
 
             //mutate genotype
-            shared_ptr<NEAT::GeneticIndividual> individualMutated(new NEAT::GeneticIndividual(individual, true));
-
-            //output genotype and voxelyze file
-            SoftbotsExperiment::dump(individualMutated, outputFilePrefix);
+            shared_ptr<NEAT::GeneticIndividual> individualNew(new NEAT::GeneticIndividual(individual, true));
+            
+            //dump the whole thing
+            fitness = sbExperiment->processEvaluation(individualNew, outputFilePrefix, 0, true, 0); //last param does nothing
         } else if (job == 2) {
-            //TODO: read input genotype 1
-            //TODO: read input genotype 2
-            //TODO: create offspring
-            //TODO: output genotype and voxelyze file
+            //read input genotype 1
+            shared_ptr<NEAT::GeneticIndividual> individual1 = sbExperiment->undump(org1);
+            
+            //read input genotype 2
+            shared_ptr<NEAT::GeneticIndividual> individual2 = sbExperiment->undump(org2);
+            
+            //create offspring, last two parameters subject to change
+            shared_ptr<NEAT::GeneticIndividual> individualNew(new NEAT::GeneticIndividual(individual1, individual2, true, -1));
+            
+            //dump the whole thing
+            fitness = sbExperiment->processEvaluation(individualNew, outputFilePrefix, 0, true, 0); //last param does nothing
         }
-
-
-
-
-        //        experimentRun.createPopulation();
-        //
-        //        experimentRun.setCleanup(false);
-        //
-        //        cout << "Population Created\n";
-        //
-        //        experimentRun.start();
 
     } catch (string s) {
         cout << "CAUGHT ERROR AT " << __FILE__ << " : " << __LINE__ << endl;
