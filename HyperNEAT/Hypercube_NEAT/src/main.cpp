@@ -56,6 +56,10 @@ int HyperNEAT_main(int argc, char **argv) {
             NEAT::Globals::init(inputFile);
             NEAT::Globals::getSingleton()->setOutputFilePrefix(outputFilePrefix); //set the name of the outputPrefixFile
         }
+        if (commandLineParser.HasSwitch("-R")) {
+            NEAT::Globals::getSingleton()->seedRandom(stringTo<unsigned int>(commandLineParser.GetSafeArgument("-R", 0, "0")));
+            NEAT::Globals::getSingleton()->setParameterValue("RandomSeed", stringTo<unsigned int>(commandLineParser.GetSafeArgument("-R", 0, "0")));
+        }
 
         int experimentType = int(GET_PARAMETER("ExperimentType") + 0.001);
 
@@ -99,10 +103,10 @@ int HyperNEAT_main(int argc, char **argv) {
         } else if (job == 1) {
             //read input genotype
             shared_ptr<NEAT::GeneticIndividual> individual = SoftbotsExperiment::undump(org1);
-            
+
             //mutate genotype
             shared_ptr<NEAT::GeneticIndividual> individualMutated(new NEAT::GeneticIndividual(individual, true));
-            
+
             //output genotype and voxelyze file
             SoftbotsExperiment::dump(individualMutated, outputFilePrefix);
         } else if (job == 2) {
