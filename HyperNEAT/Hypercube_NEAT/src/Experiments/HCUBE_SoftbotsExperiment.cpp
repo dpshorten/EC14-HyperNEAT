@@ -683,7 +683,7 @@ namespace HCUBE {
                 }
             }
             if (not hasSynapse) {
-                cout << "No syanapse from Hidden Layer to Muscles... assigning fitness of 0.00001" << endl;
+                cout << "No synapse from Hidden Layer to Muscles... assigning fitness of 0.00001" << endl;
                 return 0.00001;
             }
 
@@ -726,22 +726,14 @@ namespace HCUBE {
         }
 
         writeVoxelyzeFile(ArrayForVoxelyze, SensorArrayForVoxelyze, MuscleArrayForVoxelyze, individualID, synapseWeights, sensorPositions, hiddenPositions, musclePositions, numSensors, numHidden, numMuscles, nodeBias, nodeTimeConstant, individual);
+        dump(individual, individualID);
+        
         saveVxaOnly = 1; //debugging
         if (saveVxaOnly) {
             std::exit(0);
         }
 
-        // if (numTotalVoxels < 2)
-        // {
-        // 	fitness = 0.00001;
-        // 	cout << "individual had less than 2 voxels filled, skipping evaluation..." << endl;
-        // 	//skippedEvals++;	
-        // } else
         if (true) {
-            //nac: check md5sum of vxa file	
-            //std::ostringstream md5sumCmd;
-            //md5sumCmd << "md5sum " << individualID << "_genome.vxa";
-            //FILE* pipe = popen(md5sumCmd.str().c_str(), "r");
 
             FILE* pipe = popen("md5sum md5sumTMP.txt", "r");
             if (!pipe) {
@@ -1203,6 +1195,16 @@ namespace HCUBE {
 
     }
 
+    void SoftbotsExperiment::dump(shared_ptr<NEAT::GeneticIndividual> individual, string individualID) {
+        std::ostringstream filename;
+        filename << individualID << "_genome.xml";
+        TiXmlDocument doc(filename.str());
+        TiXmlElement *root = new TiXmlElement("Genetics");
+        individual->dump(root);
+        doc.LinkEndChild(root);
+        doc.SaveFile();
+    };
+    
     void SoftbotsExperiment::processGroup(shared_ptr<NEAT::GeneticGeneration> generation) {
         double bestFit = 0.0;
 
@@ -1442,7 +1444,7 @@ namespace HCUBE {
 
         ofstream myfile;
         std::ostringstream myFileName;
-        myFileName << individualID << "_genome.vxa";
+        myFileName << individualID << "_vox.vxa";
         myfile.open(myFileName.str().c_str());
         myfile << "\
 <?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\

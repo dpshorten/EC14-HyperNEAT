@@ -497,7 +497,7 @@ namespace NEAT
 
     void GeneticPopulation::dumpBest(string filename,bool includeGenes,bool doGZ)
     {
-        TiXmlDocument doc( filename );
+        TiXmlDocument doc(filename);
 
         TiXmlElement *root = new TiXmlElement("Genetics");
 

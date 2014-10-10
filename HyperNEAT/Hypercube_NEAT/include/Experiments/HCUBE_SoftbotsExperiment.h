@@ -12,73 +12,75 @@
 #include <string>
 
 
-namespace HCUBE
-{
-    class SoftbotsExperiment : public Experiment
-    {
+namespace HCUBE {
+
+    class SoftbotsExperiment : public Experiment {
     public:
     protected:
-		
-		//struct FitnessRecord { double fits[2]; };
 
-        int numVoxelsX,numVoxelsY,numVoxelsZ;
+        //struct FitnessRecord { double fits[2]; };
 
-        map<Node,string> nameLookup;
+        int numVoxelsX, numVoxelsY, numVoxelsZ;
+
+        map<Node, string> nameLookup;
 
         int sizeMultiplier;
-		int convergence_step;
-		float voxelExistsThreshold;
-		int allTimeHighCounter; 
-		CArray3Df TargetContinuousArray;
-		CMesh TargetMesh;
-		
-		Vec3D WorkSpace; //reasonable workspace (meters)
-		double VoxelSize; //Size of voxel in meters (IE the lattice dimension);
-		int num_x_voxels;
-		int num_y_voxels;
-		int num_z_voxels;
+        int convergence_step;
+        float voxelExistsThreshold;
+        int allTimeHighCounter;
+        CArray3Df TargetContinuousArray;
+        CMesh TargetMesh;
 
-		//map<std::string, double> fitnessLookup;
-		map<std::string, pair<double, double> > fitnessLookup;
-		int numVoxelsFilled;
-		int numVoxelsActuated;
-		int numConnections;
-		int numMaterials;
+        Vec3D WorkSpace; //reasonable workspace (meters)
+        double VoxelSize; //Size of voxel in meters (IE the lattice dimension);
+        int num_x_voxels;
+        int num_y_voxels;
+        int num_z_voxels;
 
-		int totalEvals;
-		int skippedEvals;
+        //map<std::string, double> fitnessLookup;
+        map<std::string, pair<double, double> > fitnessLookup;
+        int numVoxelsFilled;
+        int numVoxelsActuated;
+        int numConnections;
+        int numMaterials;
 
-		bool addDistanceFromCenter;
-		bool addDistanceFromCenterXY;
-		bool addDistanceFromCenterYZ;
-		bool addDistanceFromCenterXZ;
+        int totalEvals;
+        int skippedEvals;
 
-		bool addAngularPositionXY;
-		bool addAngularPositionYZ;
-		bool addAngularPositionXZ;
+        bool addDistanceFromCenter;
+        bool addDistanceFromCenterXY;
+        bool addDistanceFromCenterYZ;
+        bool addDistanceFromCenterXZ;
 
-		bool evolvingNeuralNet;
-		bool evolvingSensorsAndMotors;
-		bool phaseDrivenActuation;
+        bool addAngularPositionXY;
+        bool addAngularPositionYZ;
+        bool addAngularPositionXZ;
 
-		int numPacemaker;
-		
-		
-		void generateTarget3DObject();
-		int compareEvolvedArrayToTargetArray(CArray3Df &ContinuousArray);  
-		double drawShape(bool m_EvolvingInteractively, CMesh& meshToDraw);
-		vector <int> drawShapes(vector <CMesh> m_meshesToDraw, int _generationNumber);
+        bool evolvingNeuralNet;
+        bool evolvingSensorsAndMotors;
+        bool phaseDrivenActuation;
+
+        int numPacemaker;
+
+
+        void generateTarget3DObject();
+        int compareEvolvedArrayToTargetArray(CArray3Df &ContinuousArray);
+        double drawShape(bool m_EvolvingInteractively, CMesh& meshToDraw);
+        vector <int> drawShapes(vector <CMesh> m_meshesToDraw, int _generationNumber);
 
     public:
         SoftbotsExperiment(string _experimentName);
 
-        virtual ~SoftbotsExperiment() {}
+        virtual ~SoftbotsExperiment() {
+        }
 
         virtual NEAT::GeneticPopulation* createInitialPopulation(int populationSize);
 
         double mapXYvalToNormalizedGridCoord(const int & r_xyVal, const int & r_numVoxelsXorY);
-			
+
         double processEvaluation(shared_ptr<NEAT::GeneticIndividual> individual, string individualID, int genNum, bool saveVXA, double bestFit);
+        
+        virtual void dump(shared_ptr<NEAT::GeneticIndividual> individual, string filename);
 
         virtual void processGroup(shared_ptr<NEAT::GeneticGeneration> generation);
 
@@ -87,41 +89,41 @@ namespace HCUBE
         virtual void printNetworkCPPN(shared_ptr<const NEAT::GeneticIndividual> individual);
 
         virtual Experiment* clone();
-				
-		bool converged(int generation);
 
-		void writeAndTeeUpParentsOrderFile(); 
+        bool converged(int generation);
 
-		// int writeVoxelyzeFile( CArray3Df ContinuousArray, CArray3Df PassiveStiffArray, CArray3Df PassiveSoftArray, CArray3Df Phase1Array, CArray3Df Phase2Array, string individualID);
-		int writeVoxelyzeFile( CArray3Df ArrayForVoxelyze, CArray3Df SensorArrayForVoxelyze, CArray3Df MuscleArrayForVoxelyze, string individualID, float synapseWeights [100000], float sensorPositions [100][3], float hiddenPositions [100][3], float musclePositions [100][3], int numSensors, int numHidden, int numMuscles, float nodeBias [300], float nodeTimeConstant[300], shared_ptr<NEAT::GeneticIndividual> individual);
+        void writeAndTeeUpParentsOrderFile();
 
-		CArray3Df createArrayForVoxelyze(CArray3Df ContinuousArray,CArray3Df PassiveStiffArray, CArray3Df PassiveSoftArray,CArray3Df Phase1Array,CArray3Df Phase2Array,CArray3Df PhaseSensorArray,CArray3Df PhaseMotorArray);
+        // int writeVoxelyzeFile( CArray3Df ContinuousArray, CArray3Df PassiveStiffArray, CArray3Df PassiveSoftArray, CArray3Df Phase1Array, CArray3Df Phase2Array, string individualID);
+        int writeVoxelyzeFile(CArray3Df ArrayForVoxelyze, CArray3Df SensorArrayForVoxelyze, CArray3Df MuscleArrayForVoxelyze, string individualID, float synapseWeights [100000], float sensorPositions [100][3], float hiddenPositions [100][3], float musclePositions [100][3], int numSensors, int numHidden, int numMuscles, float nodeBias [300], float nodeTimeConstant[300], shared_ptr<NEAT::GeneticIndividual> individual);
 
-		CArray3Df createSensorArrayForVoxelyze(CArray3Df PhaseSensorArray, CArray3Df ArrayForVoxelyze);
-		
-		CArray3Df makeOneShapeOnly(CArray3Df ArrayForVoxelyze);
+        CArray3Df createArrayForVoxelyze(CArray3Df ContinuousArray, CArray3Df PassiveStiffArray, CArray3Df PassiveSoftArray, CArray3Df Phase1Array, CArray3Df Phase2Array, CArray3Df PhaseSensorArray, CArray3Df PhaseMotorArray);
 
-		CArray3Df numberSensors(CArray3Df MuscleArrayForVoxelyze);
+        CArray3Df createSensorArrayForVoxelyze(CArray3Df PhaseSensorArray, CArray3Df ArrayForVoxelyze);
 
-		int leftExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        CArray3Df makeOneShapeOnly(CArray3Df ArrayForVoxelyze);
 
-		int rightExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        CArray3Df numberSensors(CArray3Df MuscleArrayForVoxelyze);
 
-		int forwardExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        int leftExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		int backExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        int rightExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		int upExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        int forwardExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		int downExists(CArray3Df ArrayForVoxelyze, int currentPosition);
+        int backExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		pair< queue<int>, list<int> > circleOnce(CArray3Df ArrayForVoxelyze, queue<int> queueToCheck, list<int> alreadyChecked);
+        int upExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		bool isNextTo(int posX1, int posX2, int posY1, int posY2, int posZ1, int posZ2);
+        int downExists(CArray3Df ArrayForVoxelyze, int currentPosition);
 
-		vector<int> indexToCoordinates(int v);
+        pair< queue<int>, list<int> > circleOnce(CArray3Df ArrayForVoxelyze, queue<int> queueToCheck, list<int> alreadyChecked);
 
-		int coordinatesToIndex(int x, int y, int z);
+        bool isNextTo(int posX1, int posX2, int posY1, int posY2, int posZ1, int posZ2);
+
+        vector<int> indexToCoordinates(int v);
+
+        int coordinatesToIndex(int x, int y, int z);
 
     };
 }
