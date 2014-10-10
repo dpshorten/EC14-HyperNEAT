@@ -14,58 +14,55 @@
 #define HAS_PARAMETER(_name) (NEAT::Globals::getSingleton()->hasParameterValue(_name))
 #define SET_PARAMETER(_name,_val) (NEAT::Globals::getSingleton()->setParameterValue(_name,_val))
 
-enum ActivationFunction
-{
+enum ActivationFunction {
     ACTIVATION_FUNCTION_SIGMOID = 0,
-    ACTIVATION_FUNCTION_SIN,             //1
-    ACTIVATION_FUNCTION_COS,             //2
-    ACTIVATION_FUNCTION_GAUSSIAN,        //3
-    ACTIVATION_FUNCTION_SQUARE,          //4
-    ACTIVATION_FUNCTION_ABS_ROOT,        //5
-    ACTIVATION_FUNCTION_LINEAR,          //6
+    ACTIVATION_FUNCTION_SIN, //1
+    ACTIVATION_FUNCTION_COS, //2
+    ACTIVATION_FUNCTION_GAUSSIAN, //3
+    ACTIVATION_FUNCTION_SQUARE, //4
+    ACTIVATION_FUNCTION_ABS_ROOT, //5
+    ACTIVATION_FUNCTION_LINEAR, //6
     ACTIVATION_FUNCTION_ONES_COMPLIMENT, //7
-//	ACTIVATION_FUNCTION_ZERO,			//8
-    ACTIVATION_FUNCTION_END              //9
+    //	ACTIVATION_FUNCTION_ZERO,			//8
+    ACTIVATION_FUNCTION_END //9
 };
 
 extern const char *activationFunctionNames[ACTIVATION_FUNCTION_END];
 
-namespace NEAT
-{
-    class Globals
-    {
+namespace NEAT {
+
+    class Globals {
     protected:
         NEAT_DLL_EXPORT static Globals *singleton;
 
-        int nodeCounter,linkCounter,speciesCounter;
+        int nodeCounter, linkCounter, speciesCounter;
 
-		vector<shared_ptr<GeneticNodeGene> > nodeGenesThisGeneration;
+        vector<shared_ptr<GeneticNodeGene> > nodeGenesThisGeneration;
         vector<shared_ptr<GeneticLinkGene> > linkGenesThisGeneration;
-		vector<int> orgsToDeclareSelected; //JMC added for injecting fitnesses at command line
+        vector<int> orgsToDeclareSelected; //JMC added for injecting fitnesses at command line
 
-		StackMap<string,double,4096> parameters;
-		
-		string outputFilePrefix;
+        StackMap<string, double, 4096> parameters;
+
+        string outputFilePrefix;
         string materialTypes;
 
         Random random;
 
-		int extraActivationUpdates;
+        int extraActivationUpdates;
 
-		bool signedActivation;
+        bool signedActivation;
 
-		bool useTanhSigmoid;
+        bool useTanhSigmoid;
     public:
-        static inline Globals *getSingleton()
-        {
+
+        static inline Globals *getSingleton() {
             if (!singleton)
                 throw CREATE_LOCATEDEXCEPTION_INFO("You didn't initialize Globals before using it!");
 
             return singleton;
         }
 
-        static inline Globals *init()
-        {
+        static inline Globals *init() {
             if (singleton)
                 delete singleton;
 
@@ -74,8 +71,7 @@ namespace NEAT
             return singleton;
         }
 
-        static inline Globals *init(string filename)
-        {
+        static inline Globals *init(string filename) {
             if (singleton)
                 delete singleton;
 
@@ -84,8 +80,7 @@ namespace NEAT
             return singleton;
         }
 
-        static inline Globals *init(TiXmlElement *root)
-        {
+        static inline Globals *init(TiXmlElement *root) {
             if (singleton)
                 delete singleton;
 
@@ -94,51 +89,47 @@ namespace NEAT
             return singleton;
         }
 
-        static inline void deinit()
-        {
+        static inline void deinit() {
             delete singleton;
         }
 
         NEAT_DLL_EXPORT void assignNodeID(GeneticNodeGene *testNode);
 
-        NEAT_DLL_EXPORT void assignLinkID(GeneticLinkGene *testLink,bool ignoreHistory=false);
-		
-		NEAT_DLL_EXPORT void clearNodeHistory();
+        NEAT_DLL_EXPORT void assignLinkID(GeneticLinkGene *testLink, bool ignoreHistory = false);
+
+        NEAT_DLL_EXPORT void clearNodeHistory();
 
         NEAT_DLL_EXPORT void clearLinkHistory();
 
         NEAT_DLL_EXPORT int generateSpeciesID();
 
-        NEAT_DLL_EXPORT void addParameter(string name,double value);
+        NEAT_DLL_EXPORT void addParameter(string name, double value);
 
         NEAT_DLL_EXPORT bool hasParameterValue(const string &name);
 
-		NEAT_DLL_EXPORT double getParameterValue(const char *cname);
+        NEAT_DLL_EXPORT double getParameterValue(const char *cname);
 
         NEAT_DLL_EXPORT double getParameterValue(string name);
 
-        NEAT_DLL_EXPORT void setParameterValue(string name,double value);
+        NEAT_DLL_EXPORT void setParameterValue(string name, double value);
 
-		NEAT_DLL_EXPORT void addInjectOrgsSelected(vector <int> orgs); //JMC added
-		
-		NEAT_DLL_EXPORT	vector <int> getInjectOrgsSelected(); //JMC added 
-		
-		NEAT_DLL_EXPORT void overrideParametersFromFile(string fileName);
+        NEAT_DLL_EXPORT void addInjectOrgsSelected(vector <int> orgs); //JMC added
 
-        inline StackMap<string,double,4096>::iterator getMapBegin()
-        {
+        NEAT_DLL_EXPORT vector <int> getInjectOrgsSelected(); //JMC added 
+
+        NEAT_DLL_EXPORT void overrideParametersFromFile(string fileName);
+
+        inline StackMap<string, double, 4096>::iterator getMapBegin() {
             return parameters.begin();
         }
 
-        inline StackMap<string,double,4096>::iterator getMapEnd()
-        {
+        inline StackMap<string, double, 4096>::iterator getMapEnd() {
             return parameters.end();
         }
 
         NEAT_DLL_EXPORT void initRandom();
 
-        inline Random &getRandom()
-        {
+        inline Random &getRandom() {
             return random;
         }
 
@@ -146,42 +137,35 @@ namespace NEAT
 
         NEAT_DLL_EXPORT void dump(TiXmlElement *root);
 
-		inline int hasExtraActivationUpdates()
-		{
-			return extraActivationUpdates;
-		}
+        inline int hasExtraActivationUpdates() {
+            return extraActivationUpdates;
+        }
 
-		inline bool hasSignedActivation()
-		{
-			return signedActivation;
-		}
+        inline bool hasSignedActivation() {
+            return signedActivation;
+        }
 
-		inline bool isUsingTanhSigmoid()
-		{
-			return useTanhSigmoid;
-		}
+        inline bool isUsingTanhSigmoid() {
+            return useTanhSigmoid;
+        }
 
-		inline void setOutputFilePrefix(string _name)
-		{
-			outputFilePrefix = _name;
-		}
-		
-		inline string getOutputFilePrefix()
-		{
-			return outputFilePrefix;
-		}
+        inline void setOutputFilePrefix(string _name) {
+            outputFilePrefix = _name;
+        }
 
-        inline void setMaterialTypes(string _name)
-        {
+        inline string getOutputFilePrefix() {
+            return outputFilePrefix;
+        }
+
+        inline void setMaterialTypes(string _name) {
             materialTypes = _name;
         }
-        
-        inline string getMaterialTypes()
-        {
+
+        inline string getMaterialTypes() {
             return materialTypes;
         }
-        
-		
+
+
     protected:
         NEAT_DLL_EXPORT Globals();
 
@@ -195,7 +179,7 @@ namespace NEAT
 
         int generateLinkID();
 
-		void cacheParameters();
+        void cacheParameters();
     };
 
 }

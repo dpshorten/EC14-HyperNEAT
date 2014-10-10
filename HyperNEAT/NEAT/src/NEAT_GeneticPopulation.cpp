@@ -7,40 +7,33 @@
 
 //#define DEBUG_GENPOP
 
-namespace NEAT
-{
+namespace NEAT {
 
     GeneticPopulation::GeneticPopulation()
-            : onGeneration(0)
-    {
+    : onGeneration(0) {
 
         {
             generations.push_back(
-                shared_ptr<GeneticGeneration>(
+                    shared_ptr<GeneticGeneration>(
                     new GeneticGeneration(0)
-                )
-            );
+                    )
+                    );
         }
     }
 
     GeneticPopulation::GeneticPopulation(string fileName)
-            : onGeneration(-1)
-    {
+    : onGeneration(-1) {
         TiXmlDocument doc(fileName);
 
         bool loadStatus;
 
-        if (iends_with(fileName,".gz"))
-        {
+        if (iends_with(fileName, ".gz")) {
             loadStatus = doc.LoadFileGZ();
-        }
-        else
-        {
+        } else {
             loadStatus = doc.LoadFile();
         }
 
-        if (!loadStatus)
-        {
+        if (!loadStatus) {
             throw CREATE_LOCATEDEXCEPTION_INFO("Error trying to load the XML file!");
         }
 
@@ -51,8 +44,7 @@ namespace NEAT
         {
             TiXmlElement *generationElement = root->FirstChildElement("GeneticGeneration");
 
-            while (generationElement)
-            {
+            while (generationElement) {
                 generations.push_back(shared_ptr<GeneticGeneration>(new GeneticGeneration(generationElement)));
 
                 generationElement = generationElement->NextSiblingElement("GeneticGeneration");
@@ -60,16 +52,14 @@ namespace NEAT
             }
         }
 
-        if (onGeneration<0)
-        {
+        if (onGeneration < 0) {
             throw CREATE_LOCATEDEXCEPTION_INFO("Tried to load a population with no generations!");
         }
 
         adjustFitness();
     }
 
-    GeneticPopulation::~GeneticPopulation()
-    {
+    GeneticPopulation::~GeneticPopulation() {
         while (!species.empty())
             species.erase(species.begin());
 
@@ -77,66 +67,56 @@ namespace NEAT
             extinctSpecies.erase(extinctSpecies.begin());
     }
 
-    int GeneticPopulation::getIndividualCount(int generation)
-    {
-        if (generation==-1)
-					generation=int(generations.size()-1);//onGeneration);
+    int GeneticPopulation::getIndividualCount(int generation) {
+        if (generation == -1)
+            generation = int(generations.size() - 1); //onGeneration);
 
         return generations[generation]->getIndividualCount();
     }
 
-    void GeneticPopulation::addIndividual(shared_ptr<GeneticIndividual> individual)
-    {
-        generations[generations.size()-1/*onGeneration*/]->addIndividual(individual);
+    void GeneticPopulation::addIndividual(shared_ptr<GeneticIndividual> individual) {
+        generations[generations.size() - 1/*onGeneration*/]->addIndividual(individual);
     }
 
-    shared_ptr<GeneticIndividual> GeneticPopulation::getIndividual(int a,int generation)
-    {
+    shared_ptr<GeneticIndividual> GeneticPopulation::getIndividual(int a, int generation) {
 #ifdef DEBUG_GENPOP
         cout << a << ',' << generations.size() << endl;
 #endif
-        if (generation==-1)
-        {
+        if (generation == -1) {
 #ifdef DEBUG_GENPOP
             cout << "NO GEN GIVEN: USING onGeneration\n";
 #endif
-					generation=int(generations.size()-1);//onGeneration);
+            generation = int(generations.size() - 1); //onGeneration);
         }
 
-        if (generation>=int(generations.size())||a>=generations[generation]->getIndividualCount())
-        {
+        if (generation >= int(generations.size()) || a >= generations[generation]->getIndividualCount()) {
             cout << "GET_INDIVIDUAL: GENERATION OUT OF RANGE!\n";
             throw CREATE_LOCATEDEXCEPTION_INFO("GET_INDIVIDUAL: GENERATION OUT OF RANGE!\n");
         }
 #ifdef DEBUG_GENPOP
-		cout<<"return"<<endl;
+        cout << "return" << endl;
 #endif
         return generations[generation]->getIndividual(a);
     }
 
-    vector<shared_ptr<GeneticIndividual> >::iterator GeneticPopulation::getIndividualIterator(int a,int generation)
-    {
-        if (generation==-1)
-					generation=int(generations.size()-1);//onGeneration);
+    vector<shared_ptr<GeneticIndividual> >::iterator GeneticPopulation::getIndividualIterator(int a, int generation) {
+        if (generation == -1)
+            generation = int(generations.size() - 1); //onGeneration);
 
-        if (generation>=int(generations.size())||a>=generations[generation]->getIndividualCount())
-        {
+        if (generation >= int(generations.size()) || a >= generations[generation]->getIndividualCount()) {
             throw CREATE_LOCATEDEXCEPTION_INFO("ERROR: Generation out of range!\n");
         }
 
         return generations[generation]->getIndividualIterator(a);
     }
 
-    shared_ptr<GeneticIndividual> GeneticPopulation::getBestAllTimeIndividual()
-    {
+    shared_ptr<GeneticIndividual> GeneticPopulation::getBestAllTimeIndividual() {
         shared_ptr<GeneticIndividual> bestIndividual;
 
-        for (int a=0;a<(int)generations.size();a++)
-        {
-            for (int b=0;b<generations[a]->getIndividualCount();b++)
-            {
+        for (int a = 0; a < (int) generations.size(); a++) {
+            for (int b = 0; b < generations[a]->getIndividualCount(); b++) {
                 shared_ptr<GeneticIndividual> individual = generations[a]->getIndividual(b);
-                if (bestIndividual==NULL||bestIndividual->getFitness()<=individual->getFitness())
+                if (bestIndividual == NULL || bestIndividual->getFitness() <= individual->getFitness())
                     bestIndividual = individual;
             }
         }
@@ -144,47 +124,40 @@ namespace NEAT
         return bestIndividual;
     }
 
-    shared_ptr<GeneticIndividual> GeneticPopulation::getBestIndividualOfGeneration(int generation)
-    {
+    shared_ptr<GeneticIndividual> GeneticPopulation::getBestIndividualOfGeneration(int generation) {
         shared_ptr<GeneticIndividual> bestIndividual;
 
-        if (generation==-1)
-            generation = int(generations.size())-1;
+        if (generation == -1)
+            generation = int(generations.size()) - 1;
 
-        for (int b=0;b<generations[generation]->getIndividualCount();b++)
-        {
+        for (int b = 0; b < generations[generation]->getIndividualCount(); b++) {
             shared_ptr<GeneticIndividual> individual = generations[generation]->getIndividual(b);
-            if (bestIndividual==NULL||bestIndividual->getFitness()<individual->getFitness())
+            if (bestIndividual == NULL || bestIndividual->getFitness() < individual->getFitness())
                 bestIndividual = individual;
         }
 
         return bestIndividual;
     }
 
-    void GeneticPopulation::speciate()
-    {
+    void GeneticPopulation::speciate() {
         double compatThreshold = Globals::getSingleton()->getParameterValue("CompatibilityThreshold");
 
-        for (int a=0;a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)
-        {
-            shared_ptr<GeneticIndividual> individual = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
+        for (int a = 0; a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) {
+            shared_ptr<GeneticIndividual> individual = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
 
-            bool makeNewSpecies=true;
+            bool makeNewSpecies = true;
 
-            for (int b=0;b<(int)species.size();b++)
-            {
+            for (int b = 0; b < (int) species.size(); b++) {
                 double compatibility = species[b]->getBestIndividual()->getCompatibility(individual);
-                if (compatibility<compatThreshold)
-                {
+                if (compatibility < compatThreshold) {
                     //Found a compatible species
                     individual->setSpeciesID(species[b]->getID());
-                    makeNewSpecies=false;
+                    makeNewSpecies = false;
                     break;
                 }
             }
 
-            if (makeNewSpecies)
-            {
+            if (makeNewSpecies) {
                 //Make a new species.  The process of making a new speceis sets the ID for the individual.
                 shared_ptr<GeneticSpecies> newSpecies(new GeneticSpecies(individual));
                 species.push_back(newSpecies);
@@ -195,131 +168,108 @@ namespace NEAT
 
         double compatMod;
         double CompatibilityModifierParamVal = Globals::getSingleton()->getParameterValue("CompatibilityModifier");
-        
-        if ((int)species.size()<speciesTarget)
-        {
+
+        if ((int) species.size() < speciesTarget) {
             compatMod = -CompatibilityModifierParamVal;
-        }
-        else if ((int)species.size()>speciesTarget)
-        {
+        } else if ((int) species.size() > speciesTarget) {
             compatMod = +CompatibilityModifierParamVal;
-        }
-        else
-        {
-            compatMod=0.0;
+        } else {
+            compatMod = 0.0;
         }
 
-        if (compatThreshold<(fabs(compatMod)+0.3)&&compatMod<0.0)
-        {
+        if (compatThreshold < (fabs(compatMod) + 0.3) && compatMod < 0.0) {
             //This is to keep the compatibility threshold from going ridiculusly small.
-            if (compatThreshold<0.001)
+            if (compatThreshold < 0.001)
                 compatThreshold = 0.001;
 
-            compatThreshold/=2.0;
-        }
-        else if (compatThreshold<(compatMod+0.3))
-        {
-            compatThreshold*=2.0;
-        }
-        else
-        {
-            compatThreshold+=compatMod;
+            compatThreshold /= 2.0;
+        } else if (compatThreshold < (compatMod + 0.3)) {
+            compatThreshold *= 2.0;
+        } else {
+            compatThreshold += compatMod;
         }
 
-        Globals::getSingleton()->setParameterValue("CompatibilityThreshold",compatThreshold);
+        Globals::getSingleton()->setParameterValue("CompatibilityThreshold", compatThreshold);
     }
 
-    void GeneticPopulation::setSpeciesMultipliers()
-    {}
+    void GeneticPopulation::setSpeciesMultipliers() {
+    }
 
-    void GeneticPopulation::adjustFitness()
-    {
+    void GeneticPopulation::adjustFitness() {
         speciate();
 
-        for (int a=0;a<(int)species.size();a++)
-        {
+        for (int a = 0; a < (int) species.size(); a++) {
             species[a]->resetIndividuals();
         }
 
-        for (int a=0;a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)
-        {
-            shared_ptr<GeneticIndividual> individual = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
+        for (int a = 0; a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) {
+            shared_ptr<GeneticIndividual> individual = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
 
             getSpecies(individual->getSpeciesID())->addIndividual(individual);
         }
 
-        for (int a=0;a<(int)species.size();a++)
-        {
-            if (species[a]->getIndividualCount()==0)
-            {
-//                extinctSpecies.push_back(species[a]);
-                species.erase(species.begin()+a);
+        for (int a = 0; a < (int) species.size(); a++) {
+            if (species[a]->getIndividualCount() == 0) {
+                //                extinctSpecies.push_back(species[a]);
+                species.erase(species.begin() + a);
                 a--;
             }
         }
 
-        for (int a=0;a<(int)species.size();a++)
-        {
+        for (int a = 0; a < (int) species.size(); a++) {
             species[a]->setMultiplier();
             species[a]->setFitness();
             species[a]->incrementAge();
         }
 
         //This function sorts the individuals by fitness
-        generations[generations.size()-1/*onGeneration*/]->sortByFitness();
+        generations[generations.size() - 1/*onGeneration*/]->sortByFitness();
     }
 
-    void GeneticPopulation::produceNextGeneration()
-    {
+    void GeneticPopulation::produceNextGeneration() {
 
 
         cout << "In produce next generation loop...\n";
         //This clears the link history so future links with the same toNode and fromNode will have different IDs
-		Globals::getSingleton()->clearNodeHistory();
+        Globals::getSingleton()->clearNodeHistory();
         Globals::getSingleton()->clearLinkHistory();
 
-        int numParents = int(generations[generations.size()-1/*onGeneration*/]->getIndividualCount());
-		
-		//check that no org has fitness <= zero
-		for(int a=0;a<numParents;a++)
-		{
-			PRINT(generations[generations.size()-1/*onGeneration*/]->getIndividual(a)->getFitness());
-			
-			if(generations[generations.size()-1/*onGeneration*/]->getIndividual(a)->getFitness() < 1e-6)
-			{
-				throw CREATE_LOCATEDEXCEPTION_INFO("ERROR: Fitness must be a positive number!\n");
-			}
-		}						
-		
+        int numParents = int(generations[generations.size() - 1/*onGeneration*/]->getIndividualCount());
 
-        double totalFitness=0;
+        //check that no org has fitness <= zero
+        for (int a = 0; a < numParents; a++) {
+            PRINT(generations[generations.size() - 1/*onGeneration*/]->getIndividual(a)->getFitness());
 
-		//get sum of adjusted fitness for all species together
-        for (int a=0;a<(int)species.size();a++)
-        {
+            if (generations[generations.size() - 1/*onGeneration*/]->getIndividual(a)->getFitness() < 1e-6) {
+                throw CREATE_LOCATEDEXCEPTION_INFO("ERROR: Fitness must be a positive number!\n");
+            }
+        }
+
+
+        double totalFitness = 0;
+
+        //get sum of adjusted fitness for all species together
+        for (int a = 0; a < (int) species.size(); a++) {
             totalFitness += species[a]->getAdjustedFitness();
         }
-        int totalOffspring=0;
-		//give each species a fitness proportional to its adjusted fitness
-        for (int a=0;a<(int)species.size();a++)
-        {
+        int totalOffspring = 0;
+        //give each species a fitness proportional to its adjusted fitness
+        for (int a = 0; a < (int) species.size(); a++) {
             double adjustedFitness = species[a]->getAdjustedFitness();
-            int offspring = int(adjustedFitness/totalFitness*numParents);
-            totalOffspring+=offspring;
+            int offspring = int(adjustedFitness / totalFitness * numParents);
+            totalOffspring += offspring;
             species[a]->setOffspringCount(offspring);
         }
         //cout << "Pausing\n";
-		//int result = system("PAUSE");
-		//(void) result;
+        //int result = system("PAUSE");
+        //(void) result;
 
         //Some offspring were truncated.  Give these N offspring to the species that had the best N individuals
-        while (totalOffspring<numParents)
-        {
-            for (int a=0;totalOffspring<numParents&&a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)
-            {
-                shared_ptr<GeneticIndividual> ind = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
+        while (totalOffspring < numParents) {
+            for (int a = 0; totalOffspring < numParents && a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) {
+                shared_ptr<GeneticIndividual> ind = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
                 shared_ptr<GeneticSpecies> gs = getSpecies(ind->getSpeciesID());
-                gs->setOffspringCount(gs->getOffspringCount()+1);
+                gs->setOffspringCount(gs->getOffspringCount() + 1);
                 totalOffspring++;
 
                 /*
@@ -334,21 +284,19 @@ namespace NEAT
 
             }
         }
-		
-		//report stats on species
-        for (int a=0;a<(int)species.size();a++)
-        {
-            cout << "Species ID: " << species[a]->getID() << " Age: " << species[a]->getAge() << " last improv. age: " << species[a]->getAgeOfLastImprovement() << " Fitness: " << species[a]->getFitness() << "*" << species[a]->getMultiplier() << "=" << species[a]->getAdjustedFitness() <<  " Size: " << int(species[a]->getIndividualCount()) << " Offspring: " << int(species[a]->getOffspringCount()) << endl;
+
+        //report stats on species
+        for (int a = 0; a < (int) species.size(); a++) {
+            cout << "Species ID: " << species[a]->getID() << " Age: " << species[a]->getAge() << " last improv. age: " << species[a]->getAgeOfLastImprovement() << " Fitness: " << species[a]->getFitness() << "*" << species[a]->getMultiplier() << "=" << species[a]->getAdjustedFitness() << " Size: " << int(species[a]->getIndividualCount()) << " Offspring: " << int(species[a]->getOffspringCount()) << endl;
         }
 
         //jmc: This is the new generation container
         vector<shared_ptr<GeneticIndividual> > babies;
 
-        double totalIndividualFitness=0;
+        double totalIndividualFitness = 0;
 
-		//jmc: clear the flag of whether they have reproduced (I think that is what that flag does.)
-        for (int a=0;a<(int)species.size();a++)
-        {
+        //jmc: clear the flag of whether they have reproduced (I think that is what that flag does.)
+        for (int a = 0; a < (int) species.size(); a++) {
             species[a]->setReproduced(false);
         }
 
@@ -356,96 +304,88 @@ namespace NEAT
         static double mutateSpeciesChampionProbability = Globals::getSingleton()->getParameterValue("MutateSpeciesChampionProbability");
 
         double ForceCopyGenerationChampionParamVal = Globals::getSingleton()->getParameterValue("ForceCopyGenerationChampion");
-        bool forceCopyGenerationChampion = ( ForceCopyGenerationChampionParamVal> Globals::getSingleton()->getRandom().getRandomDouble()); //getRandom between but not including 0 and 1 (Avida RNG and NEAT)
+        bool forceCopyGenerationChampion = (ForceCopyGenerationChampionParamVal > Globals::getSingleton()->getRandom().getRandomDouble()); //getRandom between but not including 0 and 1 (Avida RNG and NEAT)
 
-		
-        for (int a=0;a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)         //Go through and add the species champions (including ties for champ, which jmc added)
 
-        {
-            shared_ptr<GeneticIndividual> ind = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
+        for (int a = 0; a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) //Go through and add the species champions (including ties for champ, which jmc added)
+ {
+            shared_ptr<GeneticIndividual> ind = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
             shared_ptr<GeneticSpecies> species = getSpecies(ind->getSpeciesID());
-//            if (!species->isReproduced())  //original code assumed it would only store the champ of each species, so if this flag works. but it doesn't work to preserve ties for champ.
-			if (!species->isReproduced()   //jmc: if the species has not been checked yet to determine the fitness of its champ
-				|| ind->getFitness()==species->getBestIndividual()->getFitness()) //or if the fitness of this org equals the species champ
+            //            if (!species->isReproduced())  //original code assumed it would only store the champ of each species, so if this flag works. but it doesn't work to preserve ties for champ.
+            if (!species->isReproduced() //jmc: if the species has not been checked yet to determine the fitness of its champ
+                    || ind->getFitness() == species->getBestIndividual()->getFitness()) //or if the fitness of this org equals the species champ
             {
                 species->setReproduced(true);
-				
+
                 //This is the first and best organism of this species to be added, so it's the species champion
                 //of this generation
-                if (ind->getFitness()>species->getBestIndividual()->getFitness())
-                {
+                if (ind->getFitness() > species->getBestIndividual()->getFitness()) {
                     //We have a new all-time species champion!
                     species->setBestIndividual(ind);
                     cout << "Species " << species->getID() << " has a new champ with fitness " << species->getBestIndividual()->getFitness() << endl;
                 }
 
-                if ((a==0&&forceCopyGenerationChampion)||(species->getOffspringCount()>=smallestSpeciesSizeWithElitism))
-                {
+                if ((a == 0 && forceCopyGenerationChampion) || (species->getOffspringCount() >= smallestSpeciesSizeWithElitism)) {
                     //Copy species champion.
                     bool mutateChampion;
-                    if (Globals::getSingleton()->getRandom().getRandomDouble()<mutateSpeciesChampionProbability)
+                    if (Globals::getSingleton()->getRandom().getRandomDouble() < mutateSpeciesChampionProbability)
                         mutateChampion = true;
-                    else
-					{
+                    else {
                         mutateChampion = false;
-					}
-                    babies.push_back(shared_ptr<GeneticIndividual>(new GeneticIndividual(ind,mutateChampion,babies.size())));
+                    }
+                    babies.push_back(shared_ptr<GeneticIndividual>(new GeneticIndividual(ind, mutateChampion, babies.size())));
                     species->decrementOffspringCount();
                 }
 
-                if (a==0)
-                {
+                if (a == 0) {
                     species->updateAgeOfLastImprovement();
                 }
             }
-            totalIndividualFitness+=ind->getFitness();
+            totalIndividualFitness += ind->getFitness();
         }
-		
-        double averageFitness = totalIndividualFitness/generations[generations.size()-1/*onGeneration*/]->getIndividualCount();
-        cout<<"Generation "<<int(onGeneration)<<": "<<"overall_average = "<<averageFitness<<endl;
-        
-        #ifdef PRINT_GENETIC_PERTUBATION_INFO
+
+        double averageFitness = totalIndividualFitness / generations[generations.size() - 1/*onGeneration*/]->getIndividualCount();
+        cout << "Generation " << int(onGeneration) << ": " << "overall_average = " << averageFitness << endl;
+
+#ifdef PRINT_GENETIC_PERTUBATION_INFO
         //print the gen number to this file
-        ofstream mutationEffects_file;        
-        mutationEffects_file.open ("mutationEffects.txt", ios::app );
-        mutationEffects_file << "\nGeneration "<<int(onGeneration+1)<<": " << endl; //plus 1 cause we print this line to the file before this gens data
+        ofstream mutationEffects_file;
+        mutationEffects_file.open("mutationEffects.txt", ios::app);
+        mutationEffects_file << "\nGeneration " << int(onGeneration + 1) << ": " << endl; //plus 1 cause we print this line to the file before this gens data
         mutationEffects_file.close();
 
-        ofstream mutationAndCrossoverEffects_file;        
-        mutationAndCrossoverEffects_file.open ("mutationAndCrossoverEffects.txt", ios::app );
-        mutationAndCrossoverEffects_file << "\nGeneration "<<int(onGeneration+1)<<": " << endl; //plus 1 cause we print this line to the file before this gens data
+        ofstream mutationAndCrossoverEffects_file;
+        mutationAndCrossoverEffects_file.open("mutationAndCrossoverEffects.txt", ios::app);
+        mutationAndCrossoverEffects_file << "\nGeneration " << int(onGeneration + 1) << ": " << endl; //plus 1 cause we print this line to the file before this gens data
         mutationAndCrossoverEffects_file.close();
 
-        ofstream crossoverEffects_file;        
-        crossoverEffects_file.open ("crossoverEffects.txt", ios::app );
-        crossoverEffects_file << "\nGeneration "<<int(onGeneration+1)<<": " << endl; //plus 1 cause we print this line to the file before this gens data
+        ofstream crossoverEffects_file;
+        crossoverEffects_file.open("crossoverEffects.txt", ios::app);
+        crossoverEffects_file << "\nGeneration " << int(onGeneration + 1) << ": " << endl; //plus 1 cause we print this line to the file before this gens data
         crossoverEffects_file.close();
-        #endif
+#endif
 
-        
-        cout << "Champion fitness: " << generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getFitness() << endl;
 
-        if (generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getUserData())
-        {
-            cout << "Champion data: " << generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getUserData()->summaryToString() << endl;
+        cout << "Champion fitness: " << generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getFitness() << endl;
+
+        if (generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getUserData()) {
+            cout << "Champion data: " << generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getUserData()->summaryToString() << endl;
         }
         cout << "# of Species: " << int(species.size()) << endl;
         cout << "compat threshold: " << Globals::getSingleton()->getParameterValue("CompatibilityThreshold") << endl;
 
-        for (int a=0;a<(int)species.size();a++)
-        {
+        for (int a = 0; a < (int) species.size(); a++) {
             //cout << "jmc: Making babies for species" << a << endl;
             species[a]->makeBabies(babies);
         }
         //cout << "jmc: done making babies\n";
-        if ((int)babies.size()!=generations[generations.size()-1/*onGeneration*/]->getIndividualCount())
-        {
+        if ((int) babies.size() != generations[generations.size() - 1/*onGeneration*/]->getIndividualCount()) {
             cout << "Population size changed! (or there may have been a bad (or negative, or zero) fitness value for an organism?)\n";
             throw CREATE_LOCATEDEXCEPTION_INFO("Population size changed!");
         }
 
         cout << "Making new generation\n";
-        shared_ptr<GeneticGeneration> newGeneration(generations[generations.size()-1/*onGeneration*/]->produceNextGeneration(babies,onGeneration+1));
+        shared_ptr<GeneticGeneration> newGeneration(generations[generations.size() - 1/*onGeneration*/]->produceNextGeneration(babies, onGeneration + 1));
         //cout << "Done Making new generation!\n";
 
         /*for(int a=0;a<4;a++)
@@ -462,41 +402,7 @@ namespace NEAT
         onGeneration++;
     }
 
-
-
-
-    void GeneticPopulation::dump(string filename,bool includeGenes,bool doGZ)
-    {
-        TiXmlDocument doc( filename );
-
-        TiXmlElement *root = new TiXmlElement("Genetics");
-
-        Globals::getSingleton()->dump(root);
-
-        doc.LinkEndChild(root);
-
-        for (int a=0;a<(int)generations.size();a++)
-        {
-
-            TiXmlElement *generationElementPtr = new TiXmlElement(generations[a]->getTypeName());
-
-            root->LinkEndChild(generationElementPtr);
-
-            generations[a]->dump(generationElementPtr,includeGenes);
-        }
-
-        if (doGZ)
-        {
-            doc.SaveFileGZ();
-        }
-        else
-        {
-            doc.SaveFile();
-        }
-    }
-
-    void GeneticPopulation::dumpBest(string filename,bool includeGenes,bool doGZ)
-    {
+    void GeneticPopulation::dump(string filename, bool includeGenes, bool doGZ) {
         TiXmlDocument doc(filename);
 
         TiXmlElement *root = new TiXmlElement("Genetics");
@@ -505,22 +411,45 @@ namespace NEAT
 
         doc.LinkEndChild(root);
 
-        if (!NEAT::Globals::getSingleton()->getParameterValue("OnlySaveFinalPop")){
-            for (int a=0;a<int(generations.size())-1;a++)
-            {
+        for (int a = 0; a < (int) generations.size(); a++) {
+
+            TiXmlElement *generationElementPtr = new TiXmlElement(generations[a]->getTypeName());
+
+            root->LinkEndChild(generationElementPtr);
+
+            generations[a]->dump(generationElementPtr, includeGenes);
+        }
+
+        if (doGZ) {
+            doc.SaveFileGZ();
+        } else {
+            doc.SaveFile();
+        }
+    }
+
+    void GeneticPopulation::dumpBest(string filename, bool includeGenes, bool doGZ) {
+        TiXmlDocument doc(filename);
+
+        TiXmlElement *root = new TiXmlElement("Genetics");
+
+        Globals::getSingleton()->dump(root);
+
+        doc.LinkEndChild(root);
+
+        if (!NEAT::Globals::getSingleton()->getParameterValue("OnlySaveFinalPop")) {
+            for (int a = 0; a<int(generations.size()) - 1; a++) {
 
                 TiXmlElement *generationElementPtr = new TiXmlElement(generations[a]->getTypeName());
 
                 root->LinkEndChild(generationElementPtr);
 
-                generations[a]->dumpBest(generationElementPtr,includeGenes);
+                generations[a]->dumpBest(generationElementPtr, includeGenes);
             }
         }
-        if (generations.size())
-        {
+        if (generations.size()) {
             //Always dump everyone from the final generation
-            TiXmlElement *generationElementPtr = new TiXmlElement(generations[generations.size()-1]->getTypeName());
-            generations[generations.size()-1]->dumpBest(generationElementPtr,includeGenes);
+            TiXmlElement *generationElementPtr = new TiXmlElement(generations[generations.size() - 1]->getTypeName());
+            generations[generations.size() - 1]->dumpBest(generationElementPtr, includeGenes);
             root->LinkEndChild(generationElementPtr);
         }
 
@@ -529,54 +458,45 @@ namespace NEAT
         //	cerr<<generations[generations.size()-1]->getIndividualCount();
         //if(generations.size() > 1)
         //	cerr << endl << generations[generations.size()-2]->getIndividualCount();
-//        if(generations.size() > 2) {
-		if(generations.size() > 2) {
+        //        if(generations.size() > 2) {
+        if (generations.size() > 2) {
             generations.erase(generations.begin());
-        //cerr << endl << generations[generations.size()-3]->getIndividualCount();
+            //cerr << endl << generations[generations.size()-3]->getIndividualCount();
         }
         //cerr<<"\n%%%%%%%%%%%%%%%%%%\n";
-			
-        if (doGZ)
-        {
+
+        if (doGZ) {
             doc.SaveFileGZ();
-        }
-        else
-        {
+        } else {
             doc.SaveFile();
         }
     }
 
-    void GeneticPopulation::dumpLast(string filename,bool includeGenes,bool doGZ)
-    {
-        TiXmlDocument doc( filename );
-		
+    void GeneticPopulation::dumpLast(string filename, bool includeGenes, bool doGZ) {
+        TiXmlDocument doc(filename);
+
         TiXmlElement *root = new TiXmlElement("Genetics");
-		
+
         Globals::getSingleton()->dump(root);
-		
+
         doc.LinkEndChild(root);
-		
-		int lastGenNum = (int)generations.size()-1;
-		
-		TiXmlElement *generationElementPtr = new TiXmlElement(generations[lastGenNum]->getTypeName());		
-		root->LinkEndChild(generationElementPtr);
-		generations[lastGenNum]->dump(generationElementPtr,includeGenes);
-		
-        if (doGZ)
-        {
+
+        int lastGenNum = (int) generations.size() - 1;
+
+        TiXmlElement *generationElementPtr = new TiXmlElement(generations[lastGenNum]->getTypeName());
+        root->LinkEndChild(generationElementPtr);
+        generations[lastGenNum]->dump(generationElementPtr, includeGenes);
+
+        if (doGZ) {
             doc.SaveFileGZ();
-        }
-        else
-        {
+        } else {
             doc.SaveFile();
         }
     }
-	
-    void GeneticPopulation::cleanupOld(int generationSkip)
-    {
-        for (int a=0;a<generations.size()-1/*onGeneration*/;a++)
-        {
-            if ( (a%generationSkip) == 0 )
+
+    void GeneticPopulation::cleanupOld(int generationSkip) {
+        for (int a = 0; a < generations.size() - 1/*onGeneration*/; a++) {
+            if ((a % generationSkip) == 0)
                 continue;
 
             generations[a]->cleanup();
@@ -584,68 +504,65 @@ namespace NEAT
     }
 
     //jmc adding something to write generation champion fitness and average fitness              
-    void GeneticPopulation::printToGenChampFile()
-    {        
-        double totalIndividualFitnessPrint =0; 
-        
-        for (int a=0;a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)
-        {
-            shared_ptr<GeneticIndividual> ind = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
-            totalIndividualFitnessPrint+=ind->getFitness();
+
+    void GeneticPopulation::printToGenChampFile() {
+        double totalIndividualFitnessPrint = 0;
+
+        for (int a = 0; a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) {
+            shared_ptr<GeneticIndividual> ind = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
+            totalIndividualFitnessPrint += ind->getFitness();
         }
 
-        double averageFitnessPrint = totalIndividualFitnessPrint/generations[generations.size()-1/*onGeneration*/]->getIndividualCount();
+        double averageFitnessPrint = totalIndividualFitnessPrint / generations[generations.size() - 1/*onGeneration*/]->getIndividualCount();
 
-        double totalIndividualFitnessPrintOrig =0; 
-        
-        for (int a=0;a<generations[generations.size()-1/*onGeneration*/]->getIndividualCount();a++)
-        {
-            shared_ptr<GeneticIndividual> ind = generations[generations.size()-1/*onGeneration*/]->getIndividual(a);
-            totalIndividualFitnessPrintOrig+=ind->getOrigFitness();
+        double totalIndividualFitnessPrintOrig = 0;
+
+        for (int a = 0; a < generations[generations.size() - 1/*onGeneration*/]->getIndividualCount(); a++) {
+            shared_ptr<GeneticIndividual> ind = generations[generations.size() - 1/*onGeneration*/]->getIndividual(a);
+            totalIndividualFitnessPrintOrig += ind->getOrigFitness();
         }
 
-        double averageFitnessPrintOrig = totalIndividualFitnessPrintOrig/generations[generations.size()-1/*onGeneration*/]->getIndividualCount();
+        double averageFitnessPrintOrig = totalIndividualFitnessPrintOrig / generations[generations.size() - 1/*onGeneration*/]->getIndividualCount();
 
 
-		std::ostringstream tmpName;
-		tmpName << "Softbots--" << NEAT::Globals::getSingleton()->getOutputFilePrefix() << "---gen-Genchamp-AvgFit.txt";
-	  	string outoutFileName = tmpName.str();
+        std::ostringstream tmpName;
+        tmpName << "Softbots--" << NEAT::Globals::getSingleton()->getOutputFilePrefix() << "---gen-Genchamp-AvgFit.txt";
+        string outoutFileName = tmpName.str();
 
-        ofstream output_file;        
-        output_file.open (outoutFileName.c_str(), ios::app );
-        if(onGeneration==0)
-        {
+        ofstream output_file;
+        output_file.open(outoutFileName.c_str(), ios::app);
+        if (onGeneration == 0) {
             output_file << "# 1. generation\n";
-			output_file << "# 2. genChamp Original Fitness\n";
-			output_file << "# 3. genChamp Adjusted Fitness\n";
+            output_file << "# 2. genChamp Original Fitness\n";
+            output_file << "# 3. genChamp Adjusted Fitness\n";
             //output_file << "# 4. genChamp Number of Voxels Filled\n";
             //output_file << "# 5. genChamp Node Count\n";
             output_file << "# 4. population average Original Fitness \n";
-			output_file << "# 5. population average Adjusted Fitness \n";
-			//output_file << "# 7. genChamp Direction Changes\n";
-			if(generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getUserData()) output_file << "# 6. UserData (if you implemented it)\n";
+            output_file << "# 5. population average Adjusted Fitness \n";
+            //output_file << "# 7. genChamp Direction Changes\n";
+            if (generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getUserData()) output_file << "# 6. UserData (if you implemented it)\n";
             output_file << endl;
         }
-        output_file << onGeneration+1 << " " 
-                    << generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getOrigFitness() << " "
-					<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getFitness() << " "
-					//<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getNumFilled() << " "
-                    //<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getNodesCount() << " "
-                    << averageFitnessPrintOrig << " "
-					<< averageFitnessPrint << " ";
-					//<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getDirectionChanges();
-		
-					if(generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getUserData()) // not part of every experiment. 
-					{
-						output_file << " "
-		         				   << generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getUserData()->summaryToString();  
-					}
-		
-		output_file	<< endl;
+        output_file << onGeneration + 1 << " "
+                << generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getOrigFitness() << " "
+                << generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getFitness() << " "
+                //<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getNumFilled() << " "
+                //<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getNodesCount() << " "
+                << averageFitnessPrintOrig << " "
+                << averageFitnessPrint << " ";
+        //<< generations[generations.size()-1/*onGeneration*/]->getIndividual(0)->getDirectionChanges();
+
+        if (generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getUserData()) // not part of every experiment. 
+        {
+            output_file << " "
+                    << generations[generations.size() - 1/*onGeneration*/]->getIndividual(0)->getUserData()->summaryToString();
+        }
+
+        output_file << endl;
         output_file.close();
 
-		// FIX THIS!
-		//HyperNEAT::SoftbotsExperiment::processEvaluation(generations[generations.size()-1/*onGeneration*/]->getIndividual(0), "genchamp", generations.size()-1/*onGeneration*/, true);
+        // FIX THIS!
+        //HyperNEAT::SoftbotsExperiment::processEvaluation(generations[generations.size()-1/*onGeneration*/]->getIndividual(0), "genchamp", generations.size()-1/*onGeneration*/, true);
     }
 }
 
