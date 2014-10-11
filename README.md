@@ -3,18 +3,16 @@ HyperNEAT EC class @VU 2014
 Documentation on HyperNEAT
 ---------------------------
 
-Usage:
->1../Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname>  
+Usage:  
 
->this will cause our version of the HyperNEAT tool to generate one individual with given output name. An individual consist of one .xml file (genotype) and .vxa file (phenotype)
+1. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname>  
+this will cause our version of the HyperNEAT tool to generate one individual with given output name. An individual consist of one .xml file (genotype) and .vxa file (phenotype)
 
->2../Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01>  
-
->HyperNeat tool will mutate the given individual and output this in the output name  
+2. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01>
+HyperNeat tool will mutate the given individual and output this in the output name  
  
->3../Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01> <individual02>  
- 
->HyperNeat tool will generate a new individual with given outputname, based on the genetic code in individual01 and individual02  
+3. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01> <individual02> 
+HyperNeat tool will generate a new individual with given outputname, based on the genetic code in individual01 and individual02  
 
 Explanation of the input arguments:
 
@@ -26,10 +24,10 @@ Explanation of the input arguments:
 
 Additional info:
 
->This version of HyperNEAT will be used to research softrobot evolution without the use of an artificial fitness function. 
+This version of HyperNEAT will be used to research softrobot evolution without the use of an artificial fitness function. 
 As such this version of HyperNEAT only supports reproduction of said softrobots.  
 
->$RANDOM is used so that it does not require to edit the parameter file each time and change the random seed value 
+$RANDOM is used so that it does not require to edit the parameter file each time and change the random seed value 
 
 >[future link to paper?](www.vu.nl) 
 
