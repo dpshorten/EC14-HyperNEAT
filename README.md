@@ -5,13 +5,13 @@ Documentation on HyperNEAT
 
 Usage:  
 
-1. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname>  
+1. `./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname>`   
 this will cause our version of the HyperNEAT tool to generate one individual with given output name. An individual consist of one .xml file (genotype) and .vxa file (phenotype)
 
-2. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01>
+2. `./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01>`   
 HyperNeat tool will mutate the given individual and output this in the output name  
  
-3. ./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01> <individual02> 
+3. `./Hypercube\_NEAT -I <experiment>.dat -R $RANDOM -O <outputname> -ORG <individual01> <individual02>`   
 HyperNeat tool will generate a new individual with given outputname, based on the genetic code in individual01 and individual02  
 
 Explanation of the input arguments:
