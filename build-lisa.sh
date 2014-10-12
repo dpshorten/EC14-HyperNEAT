@@ -90,7 +90,7 @@ fi
 
 
 # build HyperNEAT
-if test -e ${rootDir}/HyperNEAT/out/Hypercube_NEAT
+if test -e ${rootDir}/out/Hypercube_NEAT
 then
     echo Hypercube_NEAT exists.  Skipping
     echo
