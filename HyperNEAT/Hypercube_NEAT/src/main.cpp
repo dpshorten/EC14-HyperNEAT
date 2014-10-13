@@ -99,7 +99,7 @@ int HyperNEAT_main(int argc, char **argv) {
             shared_ptr<NEAT::GeneticIndividual> individual = sbExperiment->undump(org1);
 
             //mutate genotype
-            shared_ptr<NEAT::GeneticIndividual> individualNew(new NEAT::GeneticIndividual(individual, true));
+            shared_ptr<NEAT::GeneticIndividual> individualNew(new NEAT::GeneticIndividual(individual, true, -1));
             
             //dump the whole thing
             fitness = sbExperiment->processEvaluation(individualNew, outputFilePrefix, 0, true, 0); //last param does nothing
