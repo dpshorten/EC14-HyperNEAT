@@ -5,6 +5,8 @@ Documentation on HyperNEAT
 
 ## Usage:  
 
+`cd` into the **out** directory, and then:
+
 1. `./HyperNEAT -I <experiment>.dat -R $RANDOM -O <outputname>`   
 this will cause our version of the HyperNEAT tool to generate one individual with given output name. An individual consist of one .xml file (genotype) and .vxa file (phenotype)
 
@@ -18,8 +20,13 @@ HyperNeat tool will generate a new individual with given outputname, based on th
 
 * **-I** Denotes the input file with experiment instructions
 * **-R** The random seed
-* **-O** The output file
-* **-ORG** Existing additional input files (genotype only)
+* **-O** The output file (just the name of the individual, no file ending)
+* **-ORG** Existing additional input files (genotype only, again, only the name)
+
+
+## Output
+
+Each command will generate 2 files in the (out) folder: `[name]_genome.xml` and `[name]_vox.vxa`, where [name] is the value of the -O argument. When you want to mutate or crossover, you only have to supply this [name], not the full [name]_genotype.xml to the -ORG argument.
 
 
 ## Additional info:
