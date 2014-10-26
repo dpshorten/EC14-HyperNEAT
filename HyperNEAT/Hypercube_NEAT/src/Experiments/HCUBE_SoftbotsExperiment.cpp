@@ -1227,7 +1227,7 @@ namespace HCUBE {
 // </Material>\n";
         myfile << "\
 </Palette>\n\
-<Structure Compression=\"LONG_READABLE\">\n\
+<Structure Compression=\"ASCII_READABLE\">\n\
 <X_Voxels>" << num_x_voxels + (2 * ObsBuf) << "</X_Voxels>\n\
 <Y_Voxels>" << num_y_voxels + (2 * ObsBuf) << "</Y_Voxels>\n\
 <Z_Voxels>" << num_z_voxels << "</Z_Voxels>\n\
@@ -1275,7 +1275,7 @@ namespace HCUBE {
 
                     //if we're within the area occupied by the creature, format the voxels appropriately, else add in zeros
                     if ((y >= ObsBuf) && (y < ObsBuf + num_y_voxels) && (x >= ObsBuf) && (x < ObsBuf + num_x_voxels)) {
-                        myfile << ArrayForVoxelyze[v] << ",";
+                        myfile << ArrayForVoxelyze[v]; // << ",";
                         md5file << ArrayForVoxelyze[v];
                         v++;
                     }//if this is a place where we want an obstacle, place it
