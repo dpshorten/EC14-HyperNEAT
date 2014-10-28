@@ -10,6 +10,17 @@
 
 using namespace HCUBE;
 
+bool exists(const string& name) {
+    std::ifstream f(name.c_str());
+    if (f.good()) {
+        f.close();
+        return true;
+    } else {
+        f.close();
+        return false;
+    }
+}
+//main function
 int HyperNEAT_main(int argc, char **argv) {
     CommandLineParser commandLineParser(argc, argv);
     try {
@@ -21,6 +32,8 @@ int HyperNEAT_main(int argc, char **argv) {
         int job = 0;
         string org1 = "";
         string org2 = "";
+		string str; //empty string
+        string suffix="_genome.xml"; //file suffix
         if (commandLineParser.HasSwitch("-ORG")) {
             cout << "Switch -ORG\n";
 
@@ -95,6 +108,14 @@ int HyperNEAT_main(int argc, char **argv) {
             //at some point this sequentially calls SoftbotsExperiment::processEvaluation to check each indiv.
             experimentRun.start();
         } else if (job == 1) {
+			//check if file exists
+            str=org1+suffix;
+            if(exists(str)) {
+              cout << str << " file exist" << endl;
+            } else {
+              cout << str << " file does not exist" << endl;
+              exit(0);
+            }
             //read input genotype
             shared_ptr<NEAT::GeneticIndividual> individual = sbExperiment->undump(org1);
 
@@ -104,9 +125,25 @@ int HyperNEAT_main(int argc, char **argv) {
             //dump the whole thing
             fitness = sbExperiment->processEvaluation(individualNew, outputFilePrefix, 0, true, 0); //last param does nothing
         } else if (job == 2) {
+			//check if file exists
+            str=org1+suffix;
+            if(exists(str)) {
+              cout << str << " file exist" << endl;
+            } else {
+              cout << str << " file does not exist" << endl;
+              exit(0);
+            }
             //read input genotype 1
             shared_ptr<NEAT::GeneticIndividual> individual1 = sbExperiment->undump(org1);
-            
+  
+			//check if file exists
+            str=org2+suffix;
+            if(exists(str)) {
+              cout << str << " file exist" << endl;
+            } else {
+              cout << str << " file does not exist" << endl;
+              exit(0);
+            }
             //read input genotype 2
             shared_ptr<NEAT::GeneticIndividual> individual2 = sbExperiment->undump(org2);
             
